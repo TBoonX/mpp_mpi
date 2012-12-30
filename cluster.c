@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
 			
 			//Erhalte oberen Teil des sortieren Arrays
-			MPI_Receive(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
+			MPI_Recv(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
 			
 			//eigenes Array aktualisieren
 			for (i = 0; i < nLocal; i++)
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 			wtimes[j*6+2] = MPI_Wtime();
 			
 			//erhalte Array
-			MPI_Receive(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
+			MPI_Recv(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 			
 			//füge Arrays zusammen
 			for (i = 0; i < nLocal; i++)
@@ -157,7 +157,7 @@ int main(int argc, char** argv)
 			wtimes[j*6+4] = MPI_Wtime();
 			
 			//erhalte Array
-			MPI_Receive(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
+			MPI_Recv(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 			
 			//füge Arrays zusammen
 			for (i = 0; i < nLocal; i++)
@@ -188,7 +188,7 @@ int main(int argc, char** argv)
 			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
 			
 			//Erhalte oberen Teil des sortieren Arrays
-			MPI_Receive(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
+			MPI_Recv(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
 			
 			//eigenes Array aktualisieren
 			for (i = 0; i < nLocal; i++)
@@ -212,7 +212,7 @@ int main(int argc, char** argv)
 		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
 		//Ausgabe
-		printf("Ergebnis:\n", rank_world);
+		printf("Ergebnis:\n");
 		
 		for (i = 0; i < nLocal*p_world-1; i++)
 		{
@@ -220,7 +220,7 @@ int main(int argc, char** argv)
 		}
 		printf(" %d\n\n", ergebnis[nLocal*p_world]);
 		
-		printf("Der gesamte Vorgang dauerte %d\n", wtimes[nlocal*6-1]-wtimes[0]);
+		printf("Der gesamte Vorgang dauerte %d\n", wtimes[nLocal*6-1]-wtimes[0]);
 	}
 	else
 	{
@@ -231,4 +231,3 @@ int main(int argc, char** argv)
 	MPI_Finalize();
 	return 0;
 }
-
