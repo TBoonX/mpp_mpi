@@ -41,14 +41,16 @@ int main(int argc, char** argv)
 	int rank_local;			// Rang des Prozesses im lokalen Kommunikator
 	int p_world;			// Anzahl Prozesse in MPI_COMM_WORLD
 	int p_local;			// Anzahl Prozesse im lokalen Kommunikator
-	MPI_Comm comm_local;	// Lokaler Kommunikator
+	MPI_Comm comm_local;		// Lokaler Kommunikator
 	MPI_Status status;
 	
 	// Variablen für Merge-Splitting-Sort
 	int n;					//Anzahl der zu sortierenden Elemente
 	int nLocal;				//...pro Prozessor
+	int *temp;				//temporäre Ablage
 	int *local;				//lokales Array
-	double *wtimes;			//Array mit Zeitmessungen
+	int *ergebnis;
+	double *wtimes;				//Array mit Zeitmessungen
 	int i;					//Zaehler
 	
 	MPI_Init(&argc, &argv);
@@ -90,17 +92,107 @@ int main(int argc, char** argv)
 		//Vorstufe
 		quicksort(local, nLocal);
 		
-		//Test
+		
+		//ungerader Schritt
+		if (rank_world % 2 == 0)
+		{
+			//gerade Prozessornummer
+			//Sendet Array an Prozessor rank_world-1
+			MPI_Send(local, nLocal, int, rank_world-1, 1, MPI_COMM_WORLD);
+			
+			//Erhalte oberen Teil des sortieren Arrays
+			MPI_Receive(temp, nLocal, int, rank_world-1, 1, MPI_COMM_WORLD);
+			
+			//eigenes Array aktualisieren
+			for (i = 0; i < nLocal; i++)
+			{
+				local[i] = temp[i];
+			}
+		}
+		else
+		{
+			//ungerade Prozessornummer
+			//erhalte Array
+			MPI_Receive(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
+			
+			//füge Arrays zusammen
+			for (i = 0; i < nLocal; i++)
+			{
+				local[nLocal+i] = temp[i];
+			}
+			
+			//sortiere Array
+			quicksort(local, nLocal*2);
+			
+			//oberen Teil des Array zum zurücksenden vorbereiten
+			for (i = 0; i < nLocal; i++)
+			{
+				temp[i] = local[nLocal+i];
+			}
+			
+			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
+			MPI_Send(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
+		}
 		
 		
 		//gerader Schritt
+		if (rank_world % 2 == 0 && rank_world != p_world-1)
+		{
+			//gerade Prozessornummer != Prozessoranzahl-1
+			//erhalte Array
+			MPI_Receive(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
+			
+			//füge Arrays zusammen
+			for (i = 0; i < nLocal; i++)
+			{
+				local[nLocal+i] = temp[i];
+			}
+			
+			//sortiere Array
+			quicksort(local, nLocal*2);
+			
+			//oberen Teil des Array zum zurücksenden vorbereiten
+			for (i = 0; i < nLocal; i++)
+			{
+				temp[i] = local[nLocal+i];
+			}
+			
+			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
+			MPI_Send(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
+		}
+		else if (rank_world % 2 == 1 && rank_world != 0)
+		{
+			//ungerade Prozessornummer != 0
+			//Sendet Array an Prozessor rank_world-1
+			MPI_Send(local, nLocal, int, rank_world-1, 1, MPI_COMM_WORLD);
+			
+			//Erhalte oberen Teil des sortieren Arrays
+			MPI_Receive(temp, nLocal, int, rank_world-1, 1, MPI_COMM_WORLD);
+			
+			//eigenes Array aktualisieren
+			for (i = 0; i < nLocal; i++)
+			{
+				local[i] = temp[i];
+			}
+		}
+	}
+	//Arrays sind sortiert
+	
+	//Prozess 0 sammelt alle array
+	if (rank_world == 0)
+	{
+		//Allokiere Ergebnis
+		ergebnis = malloc((int*)sizeof(int)*p_world*nLocal);
 		
+		MPI_Gather(local, nLocal, int, ergebnis, nLocal, int, 0, MPI_COMM_WORLD);
 		
+		//Ausgabe
 		
-		//ungerader Schritt
-		
-		
-		
+	}
+	else
+	{
+		//anderen Prozesse versenden
+		MPI_Gather(local, nLocal, int, ergebnis, nLocal, int, 0, MPI_COMM_WORLD);
 	}
 
 	MPI_Finalize();
