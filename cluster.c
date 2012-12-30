@@ -1,5 +1,5 @@
 #include "mpi.h"
-
+#include <stdlib.h>
 #include <stdio.h>
 
 #define swap(a,b) {long s_;s_=a;a=b;b=s_;}
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 	
 	//Speicher für Zufallszahlen allokieren
 	//doppelte Größe von nLocal, da während der Sortierung diese Größe benötigt wird
-	local = malloc((int*)sizeof(int)*2*nLocal);
+	local = malloc((int)sizeof(int)*2*nLocal);
 	
 	//Zur Hälfte mit Zufallszahlen füllen
 	for (i=0;i<nLocal;i++) {
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
 	
 	//Zeitmessungsarray allokieren
 	//Pro Prozess pro Runde 6 Messungen
-	wtimes = alloc((double*)sizeof(double)*p_world*6);
+	wtimes = malloc((double)sizeof(double)*p_world*6);
 	
 	if (rank_world == 0)
 		printf("Jeder Prozess erzeugt sein eigenes Array.\nDas Sortierverfahren wird nun gestartet.\n");
@@ -108,10 +108,10 @@ int main(int argc, char** argv)
 			wtimes[j*6+2] = MPI_Wtime();
 			
 			//Sendet Array an Prozessor rank_world-1
-			MPI_Send(local, nLocal, int, rank_world-1, 1, MPI_COMM_WORLD);
+			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
 			
 			//Erhalte oberen Teil des sortieren Arrays
-			MPI_Receive(temp, nLocal, int, rank_world-1, 1, MPI_COMM_WORLD);
+			MPI_Receive(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
 			
 			//eigenes Array aktualisieren
 			for (i = 0; i < nLocal; i++)
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 			wtimes[j*6+2] = MPI_Wtime();
 			
 			//erhalte Array
-			MPI_Receive(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
+			MPI_Receive(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 			
 			//füge Arrays zusammen
 			for (i = 0; i < nLocal; i++)
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
 			}
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
+			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 			
 			wtimes[j*6+3] = MPI_Wtime();
 		}
@@ -157,7 +157,7 @@ int main(int argc, char** argv)
 			wtimes[j*6+4] = MPI_Wtime();
 			
 			//erhalte Array
-			MPI_Receive(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
+			MPI_Receive(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 			
 			//füge Arrays zusammen
 			for (i = 0; i < nLocal; i++)
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
 			}
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
+			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 			
 			wtimes[j*6+5] = MPI_Wtime();
 		}
@@ -185,10 +185,10 @@ int main(int argc, char** argv)
 			wtimes[j*6+4] = MPI_Wtime();
 			
 			//Sendet Array an Prozessor rank_world-1
-			MPI_Send(local, nLocal, int, rank_world-1, 1, MPI_COMM_WORLD);
+			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
 			
 			//Erhalte oberen Teil des sortieren Arrays
-			MPI_Receive(temp, nLocal, int, rank_world-1, 1, MPI_COMM_WORLD);
+			MPI_Receive(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
 			
 			//eigenes Array aktualisieren
 			for (i = 0; i < nLocal; i++)
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
 		//Allokiere Ergebnis
 		ergebnis = malloc((int*)sizeof(int)*p_world*nLocal);
 		
-		MPI_Gather(local, nLocal, int, ergebnis, nLocal, int, 0, MPI_COMM_WORLD);
+		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
 		//Ausgabe
 		printf("Ergebnis:\n", rank_world);
@@ -225,7 +225,7 @@ int main(int argc, char** argv)
 	else
 	{
 		//anderen Prozesse versenden
-		MPI_Gather(local, nLocal, int, ergebnis, nLocal, int, 0, MPI_COMM_WORLD);
+		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 	}
 
 	MPI_Finalize();
