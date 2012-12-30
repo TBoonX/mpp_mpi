@@ -42,7 +42,6 @@ int main(int argc, char** argv)
 	int p_world;			// Anzahl Prozesse in MPI_COMM_WORLD
 	int p_local;			// Anzahl Prozesse im lokalen Kommunikator
 	MPI_Comm comm_local;		// Lokaler Kommunikator
-	MPI_Status status;
 	
 	// Variablen für Merge-Splitting-Sort
 	int n;					//Anzahl der zu sortierenden Elemente
@@ -220,7 +219,7 @@ int main(int argc, char** argv)
 		}
 		printf(" %d\n\n", ergebnis[nLocal*p_world]);
 		
-		printf("Der gesamte Vorgang dauerte %d\n", wtimes[nLocal*6-1]-wtimes[0]);
+		printf("Der gesamte Vorgang dauerte %f\n", wtimes[nLocal*6-1]-wtimes[0]);
 	}
 	else
 	{
