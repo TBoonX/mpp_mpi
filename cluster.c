@@ -13,10 +13,10 @@
 */
 
 
-long partition(long* A, long n) { // Partition: Wird intern von Quicksort benötigt
-  long x = A[0];
-  long i = -1;
-  long j =  n;
+int partition(int* A, int n) { // Partition: Wird intern von Quicksort benötigt
+  int x = A[0];
+  int i = -1;
+  int j =  n;
   while (1) {
     do {j--;} while (A[j] > x);
     do {i++;} while (A[i] < x);
@@ -25,8 +25,8 @@ long partition(long* A, long n) { // Partition: Wird intern von Quicksort benöt
   }
 }
 
-void quicksort(long* A, long n) {  // Quicksort: Sequentielle Sortierung
-  long q;
+void quicksort(int* A, int n) {  // Quicksort: Sequentielle Sortierung
+  int q;
   if (n > 1) {
     q = partition(A, n);
     quicksort(&A[0], q);
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
 	
 	//n auslesen
-	n = argv[1];
+	n = atoi(argv[1]);
 
 	if( p_world < 2 || p_world%2 !=0 || n%p_world != 0)	// Gerade Anzahl Prozesse >=2 und n Vielfaches von p?
 	{
@@ -207,7 +207,7 @@ int main(int argc, char** argv)
 	if (rank_world == 0)
 	{
 		//Allokiere Ergebnis
-		ergebnis = malloc((int*)sizeof(int)*p_world*nLocal);
+		ergebnis = malloc((int)sizeof(int)*p_world*nLocal);
 		
 		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
