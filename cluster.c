@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 		//Vorstufe
 		quicksort(local, nLocal);
 		
-		
+		//Test
 		
 		
 		//gerader Schritt
