@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 	int p_world;			// Anzahl Prozesse in MPI_COMM_WORLD
 	int p_local;			// Anzahl Prozesse im lokalen Kommunikator
 	MPI_Comm comm_local;		// Lokaler Kommunikator
-	MPI_Status status;
+	MPI_Status *status;
 	
 	// Variablen für Merge-Splitting-Sort
 	int n;					//Anzahl der zu sortierenden Elemente
@@ -85,6 +85,9 @@ int main(int argc, char** argv)
 	for (i=0;i<nLocal;i++) {
 		local[i] = rand()  % 100;	//Zahlen 0 bis 99
 	}
+	
+	//temp allokieren
+	temp = malloc((int)sizeof(int)*nLocal);
 	
 	//Zeitmessungsarray allokieren
 	//Pro Prozess pro Runde 6 Messungen
