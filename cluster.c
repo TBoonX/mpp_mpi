@@ -51,7 +51,9 @@ int main(int argc, char** argv)
 	int *local;				//lokales Array
 	int *ergebnis;
 	double *wtimes;				//Array mit Zeitmessungen
-	int i;					//Zaehler
+	int i, j;				//Zaehler
+	
+	printf("\n");
 	
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank_world);
@@ -73,6 +75,8 @@ int main(int argc, char** argv)
 	//Anzahl der zu sortierenden Elemente pro Prozessor
 	nLocal = n/p_world;
 	
+	printf("P %d: Initialisierung beendet.\nnLocal = %d\n", rank_world, nLocal);
+	
 	//Speicher für Zufallszahlen allokieren
 	//doppelte Größe von nLocal, da während der Sortierung diese Größe benötigt wird
 	local = malloc((int*)sizeof(int)*2*nLocal);
@@ -86,17 +90,23 @@ int main(int argc, char** argv)
 	//Pro Prozess pro Runde 6 Messungen
 	wtimes = alloc((double*)sizeof(double)*p_world*6);
 	
+	if (rank_world == 0)
+		printf("Jeder Prozess erzeugt sein eigenes Array.\nDas Sortierverfahren wird nun gestartet.\n");
+	
 	//Wiederhole Runden p_world mal
-	for (i = 0; i < p_world;i++)
+	for (j = 0; j < p_world; j++)
 	{
 		//Vorstufe
+		wtimes[j*6] = MPI_Wtime();
 		quicksort(local, nLocal);
-		
+		wtimes[j*6+1] = MPI_Wtime();
 		
 		//ungerader Schritt
 		if (rank_world % 2 == 0)
 		{
 			//gerade Prozessornummer
+			wtimes[j*6+2] = MPI_Wtime();
+			
 			//Sendet Array an Prozessor rank_world-1
 			MPI_Send(local, nLocal, int, rank_world-1, 1, MPI_COMM_WORLD);
 			
@@ -108,10 +118,13 @@ int main(int argc, char** argv)
 			{
 				local[i] = temp[i];
 			}
+			wtimes[j*6+3] = MPI_Wtime();
 		}
 		else
 		{
 			//ungerade Prozessornummer
+			wtimes[j*6+2] = MPI_Wtime();
+			
 			//erhalte Array
 			MPI_Receive(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
 			
@@ -132,6 +145,8 @@ int main(int argc, char** argv)
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
 			MPI_Send(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
+			
+			wtimes[j*6+3] = MPI_Wtime();
 		}
 		
 		
@@ -139,6 +154,8 @@ int main(int argc, char** argv)
 		if (rank_world % 2 == 0 && rank_world != p_world-1)
 		{
 			//gerade Prozessornummer != Prozessoranzahl-1
+			wtimes[j*6+4] = MPI_Wtime();
+			
 			//erhalte Array
 			MPI_Receive(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
 			
@@ -159,10 +176,14 @@ int main(int argc, char** argv)
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
 			MPI_Send(temp, nLocal, int, rank_world+1, 1, MPI_COMM_WORLD);
+			
+			wtimes[j*6+5] = MPI_Wtime();
 		}
 		else if (rank_world % 2 == 1 && rank_world != 0)
 		{
 			//ungerade Prozessornummer != 0
+			wtimes[j*6+4] = MPI_Wtime();
+			
 			//Sendet Array an Prozessor rank_world-1
 			MPI_Send(local, nLocal, int, rank_world-1, 1, MPI_COMM_WORLD);
 			
@@ -174,9 +195,13 @@ int main(int argc, char** argv)
 			{
 				local[i] = temp[i];
 			}
+			
+			wtimes[j*6+5] = MPI_Wtime();
 		}
 	}
 	//Arrays sind sortiert
+	
+	printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
 	
 	//Prozess 0 sammelt alle array
 	if (rank_world == 0)
@@ -187,7 +212,15 @@ int main(int argc, char** argv)
 		MPI_Gather(local, nLocal, int, ergebnis, nLocal, int, 0, MPI_COMM_WORLD);
 		
 		//Ausgabe
+		printf("Ergebnis:\n", rank_world);
 		
+		for (i = 0; i < nLocal*p_world-1; i++)
+		{
+			printf(" %d, ", ergebnis[i]);
+		}
+		printf(" %d\n\n", ergebnis[nLocal*p_world]);
+		
+		printf("Der gesamte Vorgang dauerte %d\n", wtimes[nlocal*6-1]-wtimes[0]);
 	}
 	else
 	{
