@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 	//Speicher für Zufallszahlen allokieren
 	//doppelte Größe von nLocal, da während der Sortierung diese Größe benötigt wird
 	local = malloc((int)sizeof(int)*2*nLocal);
-/*	local = malloc(nLocal * sizeof(int));			*/
+/*	local = malloc(2 * nLocal * sizeof(int));			*/
 	
 	//Zur Hälfte mit Zufallszahlen füllen
 	for (i=0;i<nLocal;i++) {
