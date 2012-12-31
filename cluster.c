@@ -79,8 +79,8 @@ int main(int argc, char** argv)
 	
 	//Speicher für Zufallszahlen allokieren
 	//doppelte Größe von nLocal, da während der Sortierung diese Größe benötigt wird
-	local = malloc((int)sizeof(int)*2*nLocal);
-/*	local = malloc(2 * nLocal * sizeof(int));			*/
+//m	//  local = malloc((int)sizeof(int)*2*nLocal);
+	local = malloc(2 * nLocal * sizeof(int));			
 	
 	//Zur Hälfte mit Zufallszahlen füllen
 	for (i=0;i<nLocal;i++) {
@@ -88,11 +88,12 @@ int main(int argc, char** argv)
 	}
 	
 	//temp allokieren
-	temp = malloc((int)sizeof(int)*nLocal);
+/*	temp = malloc((int)sizeof(int)*nLocal);	*/
+	temp = malloc(nLocal * sizeof(int));					
 	
 	//Zeitmessungsarray allokieren
 	//Pro Prozess pro Runde 6 Messungen
-	wtimes = malloc((double)sizeof(double)*p_world*6);
+/*m */	wtimes = malloc(/*(double)*/ sizeof(double) * p_world * 6 );
 	
 	if (rank_world == 0)
 		printf("Jeder Prozess erzeugt sein eigenes Array.\nDas Sortierverfahren wird nun gestartet.\n");
@@ -211,7 +212,8 @@ int main(int argc, char** argv)
 	if (rank_world == 0)
 	{
 		//Allokiere Ergebnis
-		ergebnis = malloc((int)sizeof(int)*p_world*nLocal);
+		//ergebnis = malloc((int)sizeof(int)*p_world*nLocal);
+		ergebnis = malloc(sizeof(int)*p_world*nLocal);
 		
 		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
