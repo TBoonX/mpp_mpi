@@ -1,0 +1,13 @@
+git push:
+	//lokal kommiten
+	git commit -m 'KOMMENTAR ZUM COMMIT'
+	//global pushen
+	git push https://github.com/mkirbst/mpp_mpi.git master
+
+git pull:
+	//globales git pulle:
+	git pull https://github.com/mkirbst/mpp_mpi.git master
+
+kompilieren und ausführen:
+	mpicc -Wall -o cluster cluster.c
+	mpirun -np 4 -hostfile hosts cluster	//4 Rechner mit 
