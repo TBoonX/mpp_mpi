@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
 	
 	//n auslesen
-	n = atoi(argv[1]);
+	n = 100;	//atoi(argv[1]);
 
 	if( p_world < 2 || p_world%2 !=0 || n%p_world != 0)	// Gerade Anzahl Prozesse >=2 und n Vielfaches von p?
 	{
