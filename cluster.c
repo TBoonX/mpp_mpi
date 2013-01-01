@@ -102,12 +102,14 @@ int main(int argc, char** argv)
 	for (j = 0; j < p_world; j++)
 	{
 		//Vorstufe
+		printf("P %d: Start Vorstufe\n", rank_world);
 		wtimes[j*6] = MPI_Wtime();
 		quicksort(local, nLocal);
 		wtimes[j*6+1] = MPI_Wtime();
+		printf("P %d: Ende Vorstufe\nStart ungerader Schritt", rank_world);
 		
 		//ungerader Schritt
-		if (rank_world % 2 == 0)
+		if ((rank_world+1) % 2 == 0)
 		{
 			//gerade Prozessornummer
 			wtimes[j*6+2] = MPI_Wtime();
@@ -154,9 +156,9 @@ int main(int argc, char** argv)
 			wtimes[j*6+3] = MPI_Wtime();
 		}
 		
-		
+		printf("P %d: Ende ungerader Schritt\nStart gerader Schritt", rank_world);
 		//gerader Schritt
-		if (rank_world % 2 == 0 && rank_world != p_world-1)
+		if ((rank_world+1) % 2 == 0 && rank_world != p_world-1)
 		{
 			//gerade Prozessornummer != Prozessoranzahl-1
 			wtimes[j*6+4] = MPI_Wtime();
@@ -184,7 +186,7 @@ int main(int argc, char** argv)
 			
 			wtimes[j*6+5] = MPI_Wtime();
 		}
-		else if (rank_world % 2 == 1 && rank_world != 0)
+		else if ((rank_world+1) % 2 == 1 && rank_world != 0)
 		{
 			//ungerade Prozessornummer != 0
 			wtimes[j*6+4] = MPI_Wtime();
