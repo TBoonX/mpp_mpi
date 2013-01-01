@@ -13,16 +13,7 @@
 */
 
 
-void quicksort(int x[], int first, int last) {
-     int pivIndex = 0;
-     if(first < last) {
-         pivIndex = partition(x,first, last);
-         quicksort(x,first,(pivIndex-1));
-         quicksort(x,(pivIndex+1),last);
-     }
- }
- 
- int partition(int y[], int f, int l) {
+int partition(int y[], int f, int l) {
      int up,down,temp;
      int piv = y[f];
      up = f;
@@ -43,6 +34,15 @@ void quicksort(int x[], int first, int last) {
      y[f] = y[down];
      y[down] = piv;
      return down;
+}
+
+void quicksort(int x[], int first, int last) {
+     int pivIndex = 0;
+     if(first < last) {
+         pivIndex = partition(x,first, last);
+         quicksort(x,first,(pivIndex-1));
+         quicksort(x,(pivIndex+1),last);
+     }
  }
 
 int main(int argc, char** argv)
