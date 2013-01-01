@@ -13,26 +13,37 @@
 */
 
 
-int partition(int* A, int n) { // Partition: Wird intern von Quicksort benötigt
-  int x = A[0];
-  int i = -1;
-  int j =  n;
-  while (1) {
-    do {j--;} while (A[j] > x);
-    do {i++;} while (A[i] < x);
-    if (i < j) swap(A[i], A[j])
-    else       return j+1;
-  }
-}
-
-void quicksort(int* A, int n) {  // Quicksort: Sequentielle Sortierung
-  int q;
-  if (n > 1) {
-    q = partition(A, n);
-    quicksort(&A[0], q);
-    quicksort(&A[q], n-q);
-  }
-}
+void quicksort(int x[], int first, int last) {
+     int pivIndex = 0;
+     if(first < last) {
+         pivIndex = partition(x,first, last);
+         quicksort(x,first,(pivIndex-1));
+         quicksort(x,(pivIndex+1),last);
+     }
+ }
+ 
+ int partition(int y[], int f, int l) {
+     int up,down,temp;
+     int piv = y[f];
+     up = f;
+     down = l;
+     goto partLS;
+     do { 
+         temp = y[up];
+         y[up] = y[down];
+         y[down] = temp;
+     partLS:
+         while (y[up] <= piv && up < l) {
+             up++;
+         }
+         while (y[down] > piv  && down > f ) {
+             down--;
+         }
+     } while (down > up);
+     y[f] = y[down];
+     y[down] = piv;
+     return down;
+ }
 
 int main(int argc, char** argv)
 {
@@ -104,7 +115,7 @@ int main(int argc, char** argv)
 		//Vorstufe
 		printf("P %d: Start Vorstufe\n", rank_world);
 		wtimes[j*6] = MPI_Wtime();
-		quicksort(local, nLocal);
+		quicksort(local, 0, nLocal-1);
 		wtimes[j*6+1] = MPI_Wtime();
 		printf("P %d: Ende Vorstufe\nStart ungerader Schritt", rank_world);
 		
@@ -142,7 +153,7 @@ int main(int argc, char** argv)
 			}
 			
 			//sortiere Array
-			quicksort(local, nLocal*2);
+			quicksort(local, 0, nLocal*2-1);
 			
 			//oberen Teil des Array zum zurücksenden vorbereiten
 			for (i = 0; i < nLocal; i++)
@@ -173,7 +184,7 @@ int main(int argc, char** argv)
 			}
 			
 			//sortiere Array
-			quicksort(local, nLocal*2);
+			quicksort(local,  0, nLocal*2-1);
 			
 			//oberen Teil des Array zum zurücksenden vorbereiten
 			for (i = 0; i < nLocal; i++)
