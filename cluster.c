@@ -70,6 +70,9 @@ int main(int argc, char** argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank_world);
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
 	
+	//Anzahl der zu sortierenden Elemente pro Prozessor
+	nLocal = n/p_world;
+	
 	printf("Gebe n ein:\n");
 	//n auslesen
 	//n = 100;	//atoi(argv[1]);
@@ -93,9 +96,6 @@ int main(int argc, char** argv)
 		MPI_Finalize();
 		return 0;	
 	}
-	
-	//Anzahl der zu sortierenden Elemente pro Prozessor
-	nLocal = n/p_world;
 	
 	printf("P %d: Initialisierung beendet.\nnLocal = %d\n", rank_world, nLocal);
 	
