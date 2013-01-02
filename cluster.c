@@ -102,6 +102,7 @@ int main(int argc, char** argv)
 	printf("P %d: Initialisierung beendet.\n -> nLocal = %d\n", rank_world, nLocal);
 	
 	//Zur Hälfte mit Zufallszahlen füllen
+	srand((unsigned)time(NULL));
 	for (i=0;i<nLocal;i++) {
 		local[i] = rand()  % 100;	//Zahlen 0 bis 99
 	}
