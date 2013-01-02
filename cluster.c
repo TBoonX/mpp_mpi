@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 	
 	//Deklarieren der Arrays
 	int local[2 * nLocal];			//lokales Array doppelter Größe
-	int temp[nLocal];			//temporäres Array für Schritte
+	int temp[nLocal*10];			//temporäres Array für Schritte
 	double wtimes[p_world*4];		//Zeitmessungen: 4 pro Runde pro Prozessor
 	int ergebnis[p_world*nLocal];		//sortiertes Array
 	int singlecore[n];			//von einem Prozess zu sortierendes Array
