@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 
 	if( p_world < 2 || p_world%2 !=0 || n%p_world != 0)	// Gerade Anzahl Prozesse >=2 und n Vielfaches von p?
 	{
-		if( rank_world == 0)
+		if( rank_world == 10)
 		{
 			printf("Programm bitte mit geradzahliger Prozess-Anzahl >= 2 starten. Bzw. n ist kein Vielfaches von p.\n");
 		}
