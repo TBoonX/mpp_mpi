@@ -57,10 +57,10 @@ int main(int argc, char** argv)
 	
 	// Variablen für Merge-Splitting-Sort
 	int n;					//Anzahl der zu sortierenden Elemente
-	int nLocal;				//...pro Prozessor
-	int *temp;				//temporäre Ablage
-	int *local;				//lokales Array
-	int *ergebnis;
+	//int nLocal;				//...pro Prozessor
+	//int *temp;				//temporäre Ablage
+	//int *local;				//lokales Array
+	//int *ergebnis;
 	double *wtimes;				//Array mit Zeitmessungen
 	int i, j;				//Zaehler
 	
@@ -70,8 +70,19 @@ int main(int argc, char** argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank_world);
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
 	
+	printf("Gebe n ein:\n");
 	//n auslesen
-	n = 100;	//atoi(argv[1]);
+	//n = 100;	//atoi(argv[1]);
+	while (scanf("%i", &n) != 1) while (getchar() != '\n');
+	
+	int local[2 * nLocal];
+	int temp[nLocal];
+	double wtimes[p_world*6];
+	
+	//Allokiere Ergebnis
+	//ergebnis = malloc((int)sizeof(int)*p_world*nLocal);
+	//ergebnis = malloc(sizeof(int)*p_world*nLocal);
+	int ergebnis[p_world*nLocal];
 
 	if( p_world < 2 || p_world%2 !=0 || n%p_world != 0)	// Gerade Anzahl Prozesse >=2 und n Vielfaches von p?
 	{
@@ -91,7 +102,7 @@ int main(int argc, char** argv)
 	//Speicher für Zufallszahlen allokieren
 	//doppelte Größe von nLocal, da während der Sortierung diese Größe benötigt wird
 //m	//  local = malloc((int)sizeof(int)*2*nLocal);
-	local = malloc(2 * nLocal * sizeof(int));			
+	//local = malloc(2 * nLocal * sizeof(int));			
 	
 	//Zur Hälfte mit Zufallszahlen füllen
 	for (i=0;i<nLocal;i++) {
@@ -100,11 +111,11 @@ int main(int argc, char** argv)
 	
 	//temp allokieren
 /*	temp = malloc((int)sizeof(int)*nLocal);	*/
-	temp = malloc(nLocal * sizeof(int));					
+	//temp = malloc(nLocal * sizeof(int));					
 	
 	//Zeitmessungsarray allokieren
 	//Pro Prozess pro Runde 6 Messungen
-/*m */	wtimes = malloc(/*(double)*/ sizeof(double) * p_world * 6 );
+/*m */	//wtimes = malloc(/*(double)*/ sizeof(double) * p_world * 6 );
 	
 	if (rank_world == 0)
 		printf("Jeder Prozess erzeugt sein eigenes Array.\nDas Sortierverfahren wird nun gestartet.\n");
@@ -224,10 +235,6 @@ int main(int argc, char** argv)
 	//Prozess 0 sammelt alle array
 	if (rank_world == 0)
 	{
-		//Allokiere Ergebnis
-		//ergebnis = malloc((int)sizeof(int)*p_world*nLocal);
-		ergebnis = malloc(sizeof(int)*p_world*nLocal);
-		
 		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
 		//Ausgabe
