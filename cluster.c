@@ -167,7 +167,7 @@ int main(int argc, char** argv)
 			wtimes[j*6+3] = MPI_Wtime();
 		}
 		
-		printf("P %d: Ende ungerader Schritt\nStart gerader Schritt", rank_world);
+		printf("P %d: Ende ungerader Schritt\nStart gerader Schritt\n", rank_world);
 		//gerader Schritt
 		if ((rank_world+1) % 2 == 0 && rank_world != p_world-1)
 		{
@@ -234,7 +234,7 @@ int main(int argc, char** argv)
 		}
 		printf(" %d\n\n", ergebnis[nLocal*p_world-1]);
 		
-		printf("Der gesamte Vorgang dauerte %f\n", wtimes[nLocal*6-1]-wtimes[0]);
+		printf("Der gesamte Vorgang dauerte %f\n", wtimes[p_world*6-1]-wtimes[0]);
 	}
 	else
 	{
