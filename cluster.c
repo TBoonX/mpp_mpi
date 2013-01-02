@@ -145,6 +145,7 @@ int main(int argc, char** argv)
 			printf("   gerade Prozessornummer\n");
 			//Sendet Array an Prozessor rank_world-1
 			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
+			printf("   gesendet\n");
 			
 			//Erhalte oberen Teil des sortieren Arrays
 			MPI_Recv(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
