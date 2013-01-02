@@ -51,6 +51,7 @@ int main(int argc, char** argv)
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
 	int p_world;			// Anzahl Prozesse in MPI_COMM_WORLD
 	MPI_Status *status;
+	double MPI_Wtick(void);
 	
 	// Variablen für Merge-Splitting-Sort
 	int n;					//Anzahl der zu sortierenden Elemente
@@ -67,7 +68,7 @@ int main(int argc, char** argv)
 	//Festlegen von n
 	if (rank_world == 0)
 	{
-		printf("Gebe n ein:\n");
+		printf("Gib n ein:\n");
 		while (scanf("%i", &n) != 1) while (getchar() != '\n');
 
 		//MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -100,6 +101,8 @@ int main(int argc, char** argv)
 	int ergebnis[p_world*nLocal];		//sortiertes Array
 	int singlecore[n];			//von einem Prozess zu sortierendes Array
 	double singlecoretimes[2];		//  Zeit
+
+	status = malloc(sizeof(MPI_Status));
 	
 	printf("P %d: Initialisierung beendet.\n -> nLocal = %d\n", rank_world, nLocal);
 	
@@ -121,7 +124,7 @@ int main(int argc, char** argv)
 	//Zur Hälfte mit Zufallszahlen füllen
 	srand((unsigned)time(NULL));
 	for (i=0;i<nLocal;i++) {
-		local[i] = rand()%1000;		//Zahlen 0 bis 1000
+		local[i] = rand()%n;		//Zahlen 0 bis n
 	}
 	
 	if (rank_world == 0)
@@ -221,7 +224,8 @@ int main(int argc, char** argv)
 			}
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD);			
+			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD);
+			
 			wtimes[j*4+3] = MPI_Wtime();
 		}
 		else if ((rank_world+1) % 2 == 1 && rank_world != 0)
@@ -239,6 +243,10 @@ int main(int argc, char** argv)
 				local[i] = temp[i];
 			}
 			
+			wtimes[j*4+3] = MPI_Wtime();
+		}
+		else
+		{
 			wtimes[j*4+3] = MPI_Wtime();
 		}
 	}
@@ -259,10 +267,18 @@ int main(int argc, char** argv)
 			printf(" %d, ", ergebnis[i]);
 		}
 		printf(" %d\n\n", ergebnis[nLocal*p_world-1]);
+
+		//printf("wtimes:\n   0: %lf \n   p_world*4-1: %lf\n\n", wtimes[0], wtimes[p_world*4-1]);
+
+		printf("\nwtimes:\n");
+		for (j = 0; j < p_world*4; j++)
+		{
+			printf("   %d: %lf\n", j, wtimes[j]);
+		}
 		
-		printf("Der gesamte Vorgang dauerte %f\n", wtimes[p_world*4-1]-wtimes[0]);
+		printf("\n\nDer gesamte Vorgang dauerte %lf\n", wtimes[p_world*4-1]-wtimes[0]);
 		
-		printf("\nSpeedup: S(p) = %f", (singlecoretimes[1]-singlecoretimes[0])/(wtimes[p_world*4-1]-wtimes[0]) );
+		printf("\nSpeedup: S(p) = %lf\n\n", (singlecoretimes[1]-singlecoretimes[0])/(wtimes[p_world*4-1]-wtimes[0]) );
 	}
 	else
 	{
