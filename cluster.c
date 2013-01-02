@@ -73,10 +73,14 @@ int main(int argc, char** argv)
 	//Anzahl der zu sortierenden Elemente pro Prozessor
 	nLocal = n/p_world;
 	
-	printf("Gebe n ein:\n");
-	//n auslesen
-	//n = 100;	//atoi(argv[1]);
-	while (scanf("%i", &n) != 1) while (getchar() != '\n');
+	if (rank_world == 0)
+	{
+		printf("Gebe n ein:\n");
+		//n auslesen
+		//n = 100;	//atoi(argv[1]);
+		while (scanf("%i", &n) != 1) while (getchar() != '\n');
+	}
+	n = 100;
 	
 	int local[2 * nLocal];
 	int temp[nLocal];
