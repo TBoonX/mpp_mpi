@@ -50,7 +50,6 @@ int main(int argc, char** argv)
 	//MPI-Variablen
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
 	int p_world;			// Anzahl Prozesse in MPI_COMM_WORLD
-	MPI_Comm comm_local;		// Lokaler Kommunikator
 	MPI_Status *status;
 	
 	// Variablen für Merge-Splitting-Sort
@@ -74,13 +73,16 @@ int main(int argc, char** argv)
 		printf("Gebe n ein:\n");
 		while (scanf("%i", &n) != 1) while (getchar() != '\n');
 
-		MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		//MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	}
 	else
-		MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		;//MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		
+	MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
 	printf("P %d: n = %d\n", rank_world, n);
 
+	//Test auf korrekte Parameter
 	if( p_world < 2 || p_world%2 !=0 || n%p_world != 0)	// Gerade Anzahl Prozesse >=2 und n Vielfaches von p?
 	{
 		if( rank_world == 0)
@@ -97,7 +99,7 @@ int main(int argc, char** argv)
 	double wtimes[p_world*6];		//Zeitmessungen: 6 pro Runde pro Prozessor
 	int ergebnis[p_world*nLocal];		//sortiertes Array
 	
-	printf("P %d: Initialisierung beendet.\nnLocal = %d\n", rank_world, nLocal);
+	printf("P %d: Initialisierung beendet.\n -> nLocal = %d\n", rank_world, nLocal);
 	
 	//Zur Hälfte mit Zufallszahlen füllen
 	for (i=0;i<nLocal;i++) {
