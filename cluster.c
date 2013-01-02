@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 	//int *temp;				//temporäre Ablage
 	//int *local;				//lokales Array
 	//int *ergebnis;
-	double *wtimes;				//Array mit Zeitmessungen
+	//double *wtimes;				//Array mit Zeitmessungen
 	int i, j;				//Zaehler
 	
 	printf("\n");
