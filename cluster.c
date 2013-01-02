@@ -142,11 +142,14 @@ int main(int argc, char** argv)
 		if ((rank_world+1) % 2 == 0)
 		{
 			//gerade Prozessornummer
+			printf("   gerade Prozessornummer\n");
 			//Sendet Array an Prozessor rank_world-1
 			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
 			
 			//Erhalte oberen Teil des sortieren Arrays
 			MPI_Recv(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
+			
+			printf("   ausgetauscht\n");
 			
 			//eigenes Array aktualisieren
 			for (i = 0; i < nLocal; i++)
@@ -158,6 +161,7 @@ int main(int argc, char** argv)
 		else
 		{
 			//ungerade Prozessornummer
+			printf("   ungerade Prozessornummer\n");
 			//erhalte Array
 			MPI_Recv(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
 			
@@ -169,6 +173,8 @@ int main(int argc, char** argv)
 			
 			//sortiere Array
 			quicksort(local, 0, nLocal*2-1);
+			
+			printf("   sortiert\n");
 			
 			//oberen Teil des Array zum zurücksenden vorbereiten
 			for (i = 0; i < nLocal; i++)
