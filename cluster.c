@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 	
 	// Variablen für Merge-Splitting-Sort
 	int n;					//Anzahl der zu sortierenden Elemente
-	//int nLocal;				//...pro Prozessor
+	int nLocal;				//...pro Prozessor
 	//int *temp;				//temporäre Ablage
 	//int *local;				//lokales Array
 	//int *ergebnis;
