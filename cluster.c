@@ -103,7 +103,7 @@ int main(int argc, char** argv)
 	
 	printf("P %d: Initialisierung beendet.\n -> nLocal = %d\n", rank_world, nLocal);
 	
-	printf("\nBestimmung von T(1)...\n")
+	printf("\nBestimmung von T(1)...\n");
 	
 	//Array füllen
 	for (i=0;i<n;i++) {
@@ -114,7 +114,7 @@ int main(int argc, char** argv)
 	quicksort(singlecore, 0, n-1);
 	singlecoretimes[1] = MPI_Wtime();
 	
-	printf("   -> T(1) = $f\n\n", singlecoretimes[1]-singlecoretimes[0]);
+	printf("   -> T(1) = %f \n\n", singlecoretimes[1]-singlecoretimes[0]);
 	
 	//Zur Hälfte mit Zufallszahlen füllen
 	srand((unsigned)time(NULL));
@@ -245,7 +245,7 @@ int main(int argc, char** argv)
 		
 		printf("Der gesamte Vorgang dauerte %f\n", wtimes[p_world*4-1]-wtimes[0]);
 		
-		printf("\nSpeedup: S(p) = %f", (singlecoretimes[1]-singlecoretimes[0])/(wtimes[p_world*4-1]-wtimes[0]) )
+		printf("\nSpeedup: S(p) = %f", (singlecoretimes[1]-singlecoretimes[0])/(wtimes[p_world*4-1]-wtimes[0]) );
 	}
 	else
 	{
