@@ -158,6 +158,8 @@ int main(int argc, char** argv)
 				local[i] = temp[i];
 			}
 			wtimes[j*4+2] = MPI_Wtime();
+			
+			printf("   ungeraden Schritt beendet\n");
 		}
 		else
 		{
@@ -165,6 +167,8 @@ int main(int argc, char** argv)
 			printf("   ungerade Prozessornummer\n");
 			//erhalte Array
 			MPI_Recv(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
+			
+			printf("   erhalten\n");
 			
 			//füge Arrays zusammen
 			for (i = 0; i < nLocal; i++)
@@ -183,8 +187,12 @@ int main(int argc, char** argv)
 				temp[i] = local[nLocal+i];
 			}
 			
+			printf("   temp beschrieben\n");
+			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
 			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
+			
+			printf("   temp gesendet\n");
 			
 			wtimes[j*4+2] = MPI_Wtime();
 		}
