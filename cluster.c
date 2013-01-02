@@ -73,13 +73,18 @@ int main(int argc, char** argv)
 	//Anzahl der zu sortierenden Elemente pro Prozessor
 	nLocal = n/p_world;
 	
-	if (rank_world == 10)
+	if (rank_world == 0)
 	{
 		printf("Gebe n ein:\n");
 		//n auslesen
 		//n = 100;	//atoi(argv[1]);
 		while (scanf("%i", &n) != 1) while (getchar() != '\n');
+
+		MPI_Scatter(n, 1, MPI_INT, n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	}
+	else
+		MPI_Scatter(n, 1, MPI_INT, n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		
 	
 	int local[2 * nLocal];
 	int temp[nLocal];
@@ -207,8 +212,7 @@ int main(int argc, char** argv)
 			}
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
-			
+			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);			
 			wtimes[j*6+5] = MPI_Wtime();
 		}
 		else if ((rank_world+1) % 2 == 1 && rank_world != 0)
@@ -243,11 +247,11 @@ int main(int argc, char** argv)
 		//Ausgabe
 		printf("Ergebnis:\n");
 		
-		for (i = 0; i < nLocal*p_world-1; i++)
+		for (i = 0; i < nLocal*p_world-2; i++)
 		{
 			printf(" %d, ", ergebnis[i]);
 		}
-		printf(" %d\n\n", ergebnis[nLocal*p_world]);
+		printf(" %d\n\n", ergebnis[nLocal*p_world-1]);
 		
 		printf("Der gesamte Vorgang dauerte %f\n", wtimes[nLocal*6-1]-wtimes[0]);
 	}
