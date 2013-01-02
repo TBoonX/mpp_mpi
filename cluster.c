@@ -98,10 +98,8 @@ int main(int argc, char** argv)
 	int temp[nLocal];			//temporäres Array für Schritte
 	double wtimes[p_world*4];		//Zeitmessungen: 4 pro Runde pro Prozessor
 	int ergebnis[p_world*nLocal];		//sortiertes Array
-	if (rank_world == 0) {
-		int singlecore[n];			//von einem Prozess zu sortierendes Array
-		double singlecoretimes[2];		//Zeit
-	}
+	int singlecore[n];			//von einem Prozess zu sortierendes Array
+	double singlecoretimes[2];		//  Zeit
 	
 	printf("P %d: Initialisierung beendet.\n -> nLocal = %d\n", rank_world, nLocal);
 	
