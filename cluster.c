@@ -98,23 +98,27 @@ int main(int argc, char** argv)
 	int temp[nLocal];			//temporäres Array für Schritte
 	double wtimes[p_world*4];		//Zeitmessungen: 4 pro Runde pro Prozessor
 	int ergebnis[p_world*nLocal];		//sortiertes Array
-	int singlecore[n];			//von einem Prozess zu sortierendes Array
-	double singlecoretimes[2];		//Zeit
+	if (rank_world == 0) {
+		int singlecore[n];			//von einem Prozess zu sortierendes Array
+		double singlecoretimes[2];		//Zeit
+	}
 	
 	printf("P %d: Initialisierung beendet.\n -> nLocal = %d\n", rank_world, nLocal);
 	
-	printf("\nBestimmung von T(1)...\n");
-	
-	//Array füllen
-	for (i=0;i<n;i++) {
-		singlecore[i] = rand() % n;		//Zahlen 0 bis n
+	if (rank_world == 0) {
+		printf("\nBestimmung von T(1)...\n");
+		
+		//Array füllen
+		for (i=0;i<n;i++) {
+			singlecore[i] = rand() % n;		//Zahlen 0 bis n
+		}
+		
+		singlecoretimes[0] = MPI_Wtime();
+		quicksort(singlecore, 0, n-1);
+		singlecoretimes[1] = MPI_Wtime();
+		
+		printf("   -> T(1) = %f \n\n", singlecoretimes[1]-singlecoretimes[0]);
 	}
-	
-	singlecoretimes[0] = MPI_Wtime();
-	quicksort(singlecore, 0, n-1);
-	singlecoretimes[1] = MPI_Wtime();
-	
-	printf("   -> T(1) = %f \n\n", singlecoretimes[1]-singlecoretimes[0]);
 	
 	//Zur Hälfte mit Zufallszahlen füllen
 	srand((unsigned)time(NULL));
