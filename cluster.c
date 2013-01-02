@@ -80,11 +80,12 @@ int main(int argc, char** argv)
 		//n = 100;	//atoi(argv[1]);
 		while (scanf("%i", &n) != 1) while (getchar() != '\n');
 
-		MPI_Scatter(n, 1, MPI_INT, n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	}
 	else
-		MPI_Scatter(n, 1, MPI_INT, n, 1, MPI_INT, 0, MPI_COMM_WORLD);
-		
+		MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+	printf("P %d: n = %d\n", rank_world, n);		
 	
 	int local[2 * nLocal];
 	int temp[nLocal];
@@ -136,7 +137,7 @@ int main(int argc, char** argv)
 		wtimes[j*6] = MPI_Wtime();
 		quicksort(local, 0, nLocal-1);
 		wtimes[j*6+1] = MPI_Wtime();
-		printf("P %d: Ende Vorstufe\nStart ungerader Schritt", rank_world);
+		printf("P %d: Ende Vorstufe\nStart ungerader Schritt\n", rank_world);
 		
 		//ungerader Schritt
 		if ((rank_world+1) % 2 == 0)
