@@ -1,24 +1,45 @@
 #!/bin/bash
 
-##1##  get filename without extension: (Source: http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash)
-for fullpath in "$@"
-do
-    filename="${fullpath##*/}"                      # Strip longest match of */ from start
-    dir="${fullpath:0:${#fullpath} - ${#filename}}" # Substring from 0 thru pos of filename
-    base="${filename%.[^.]*}"                       # Strip shortest match of . plus at least one non-dot char from end
-    ext="${filename:${#base} + 1}"                  # Substring from len of base thru end
-    if [[ -z "$base" && -n "$ext" ]]; then          # If we have an extension and no base, it's really the base
-        base=".$ext"
-        ext=""
-    fi
+##1##  process args:
+CPUCOUNT=0
+VRANGE=0
+INPUTFILENAME="cluster.c"
+OUTPUTFILENAME="cluster"
 
-#    echo -e "$fullpath:\n\tdir  = \"$dir\"\n\tbase = \"$base\"\n\text  = \"$ext\""
+
+function usage {
+        echo "Usage: $0 -c CPUCOUNT -v VALUERANGE -i INPUTFILE -o OUTPUTFILE"
+        exit 1;
+}
+
+##min 1 param
+if [ $# -ne 8 ] ; then
+        usage;
+fi
+
+##process args
+while getopts c:hi:o:v: opt
+do
+        case "$opt" in
+                c) CPUCOUNT=$OPTARG;;
+                h) usage;;
+                i) INPUTFILENAME=$OPTARG;;
+                o) OUTPUTFILENAME=$OPTARG;;
+                v) VRANGE=$OPTARG;;
+                \?) usage;;
+        esac
 done
+
+echo "CPUCOUNT: $CPUCOUNT"
+echo "VRANGE:   $VRANGE"
+echo "INPUT:    $INPUTFILENAME"
+echo "OUT:      $OUTPUTFILENAME"
+echo $INPUTFILENAME
 
 
 ##2##  compile 
 echo "compiling $base.$ext ..."
-mpicc -Wall -o $base $base.$ext
+mpicc -Wall -o $OUTPUTFILENAME $INPUTFILENAME
 
 
 ##3## create hostlist dynamically
@@ -45,4 +66,4 @@ HOSTNR=`wc -l $HOSTLISTFILENAME | awk '{print $1}'`
 echo "${HOSTNR} hosts online"
 
 ##4## run program on this hosts
-mpirun -np 4 -hostfile $HOSTLISTFILENAME $base	#4 Rechner mit 
+mpirun -np $CPUCOUNT -hostfile $HOSTLISTFILENAME $OUTPUTFILENAME 
