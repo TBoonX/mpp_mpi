@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 	MPI_Status *status;
 	
 	// Variablen für Merge-Splitting-Sort
-	int n = 10;					//Anzahl der zu sortierenden Elemente
+	int n = 100;					//Anzahl der zu sortierenden Elemente
 	int nLocal;				//...pro Prozessor
 	//int *temp;				//temporäre Ablage
 	//int *local;				//lokales Array
