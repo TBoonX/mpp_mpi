@@ -1,6 +1,6 @@
 #!/bin/bash
 
-##1##  process args:
+##0##  process script args:
 CPUCOUNT=0
 VRANGE=0
 INPUTFILENAME="cluster.c"
@@ -12,7 +12,7 @@ function usage {
         exit 1;
 }
 
-##min 1 param
+##8 params required
 if [ $# -ne 8 ] ; then
         usage;
 fi
@@ -34,16 +34,15 @@ echo "CPUCOUNT: $CPUCOUNT"
 echo "VRANGE:   $VRANGE"
 echo "INPUT:    $INPUTFILENAME"
 echo "OUT:      $OUTPUTFILENAME"
-echo $INPUTFILENAME
 
 
-##2##  compile 
-echo "compiling $INPUTFILENAME ..."
+##1##  compile 
+echo "STAGE 1 - compiling $INPUTFILENAME ..."
 mpicc -Wall -o $OUTPUTFILENAME $INPUTFILENAME
 
 
-##3## create hostlist dynamically
-echo "creating host list ..."
+##2## create hostlist dynamically
+echo "STAGE 2 - creating host list ..."
 
 ##simson00-25: 141.57.9.21-46
 ##check for individual output filename from user given args
@@ -65,5 +64,6 @@ done
 HOSTNR=`wc -l $HOSTLISTFILENAME | awk '{print $1}'`
 echo "${HOSTNR} hosts online"
 
-##4## run program on this hosts
+##3## run program on this hosts
+echo "STAGE 3 - run $OUTPUTFILENAME on $CPUCOUNT cpus "
 mpirun -np $CPUCOUNT -hostfile $HOSTLISTFILENAME $OUTPUTFILENAME 
