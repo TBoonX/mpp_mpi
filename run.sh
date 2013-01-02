@@ -58,7 +58,7 @@ do
     ping -c 1 simson$i  > /dev/null
         if [ $? = 0 ] 
             then
-                ping -c 1 simson$i | grep "64 bytes" | awk ' BEGIN {FS="("} {print $2}' | awk ' BEGIN {FS=")"} {print $1}' >> $HOSTLISTFILENAME
+                ping -c 1 simson$i | grep "64 bytes" | awk ' BEGIN {FS="("} {print $2}' | awk ' BEGIN {FS=")"} {print $1}' | grep -v 141.57.9.29 >> $HOSTLISTFILENAME
         fi
 done
 HOSTNR=`wc -l $HOSTLISTFILENAME | awk '{print $1}'`
