@@ -49,23 +49,18 @@ int main(int argc, char** argv)
 {
 	//MPI-Variablen
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
-	int rank_local;			// Rang des Prozesses im lokalen Kommunikator
 	int p_world;			// Anzahl Prozesse in MPI_COMM_WORLD
-	int p_local;			// Anzahl Prozesse im lokalen Kommunikator
 	MPI_Comm comm_local;		// Lokaler Kommunikator
 	MPI_Status *status;
 	
 	// Variablen für Merge-Splitting-Sort
-	int n = 100;					//Anzahl der zu sortierenden Elemente
+	int n = 100;				//Anzahl der zu sortierenden Elemente
 	int nLocal;				//...pro Prozessor
-	//int *temp;				//temporäre Ablage
-	//int *local;				//lokales Array
-	//int *ergebnis;
-	//double *wtimes;				//Array mit Zeitmessungen
 	int i, j;				//Zaehler
 	
 	printf("\n");
 	
+	//Initialisierung der MPI Umgebung
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank_world);
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
@@ -73,11 +68,10 @@ int main(int argc, char** argv)
 	//Anzahl der zu sortierenden Elemente pro Prozessor
 	nLocal = n/p_world;
 	
+	//Festlegen von n
 	if (rank_world == 0)
 	{
 		printf("Gebe n ein:\n");
-		//n auslesen
-		//n = 100;	//atoi(argv[1]);
 		while (scanf("%i", &n) != 1) while (getchar() != '\n');
 
 		MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -85,16 +79,7 @@ int main(int argc, char** argv)
 	else
 		MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-	printf("P %d: n = %d\n", rank_world, n);		
-	
-	int local[2 * nLocal];
-	int temp[nLocal];
-	double wtimes[p_world*6];
-	
-	//Allokiere Ergebnis
-	//ergebnis = malloc((int)sizeof(int)*p_world*nLocal);
-	//ergebnis = malloc(sizeof(int)*p_world*nLocal);
-	int ergebnis[p_world*nLocal];
+	printf("P %d: n = %d\n", rank_world, n);
 
 	if( p_world < 2 || p_world%2 !=0 || n%p_world != 0)	// Gerade Anzahl Prozesse >=2 und n Vielfaches von p?
 	{
@@ -106,25 +91,18 @@ int main(int argc, char** argv)
 		return 0;	
 	}
 	
-	printf("P %d: Initialisierung beendet.\nnLocal = %d\n", rank_world, nLocal);
+	//Deklarieren der Arrays
+	int local[2 * nLocal];			//lokales Array doppelter Größe
+	int temp[nLocal];			//temporäres Array für Schritte
+	double wtimes[p_world*6];		//Zeitmessungen: 6 pro Runde pro Prozessor
+	int ergebnis[p_world*nLocal];		//sortiertes Array
 	
-	//Speicher für Zufallszahlen allokieren
-	//doppelte Größe von nLocal, da während der Sortierung diese Größe benötigt wird
-//m	//  local = malloc((int)sizeof(int)*2*nLocal);
-	//local = malloc(2 * nLocal * sizeof(int));			
+	printf("P %d: Initialisierung beendet.\nnLocal = %d\n", rank_world, nLocal);
 	
 	//Zur Hälfte mit Zufallszahlen füllen
 	for (i=0;i<nLocal;i++) {
 		local[i] = rand()  % 100;	//Zahlen 0 bis 99
 	}
-	
-	//temp allokieren
-/*	temp = malloc((int)sizeof(int)*nLocal);	*/
-	//temp = malloc(nLocal * sizeof(int));					
-	
-	//Zeitmessungsarray allokieren
-	//Pro Prozess pro Runde 6 Messungen
-/*m */	//wtimes = malloc(/*(double)*/ sizeof(double) * p_world * 6 );
 	
 	if (rank_world == 0)
 		printf("Jeder Prozess erzeugt sein eigenes Array.\nDas Sortierverfahren wird nun gestartet.\n");
