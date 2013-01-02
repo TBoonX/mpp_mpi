@@ -68,8 +68,12 @@ int main(int argc, char** argv)
 	//Festlegen von n
 	if (rank_world == 0)
 	{
-		printf("Gib n ein:\n");
-		while (scanf("%i", &n) != 1) while (getchar() != '\n');
+		if(argc == 0) {
+			printf("Gib n ein:\n");
+			while (scanf("%i", &n) != 1) while (getchar() != '\n');
+		} else {
+			n = atoi(argv(1));
+		}
 
 		//MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	}
