@@ -38,7 +38,7 @@ echo $INPUTFILENAME
 
 
 ##2##  compile 
-echo "compiling $base.$ext ..."
+echo "compiling $INPUTFILENAME ..."
 mpicc -Wall -o $OUTPUTFILENAME $INPUTFILENAME
 
 
