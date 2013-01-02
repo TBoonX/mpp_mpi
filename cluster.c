@@ -45,7 +45,8 @@ void quicksort(int x[], int first, int last) {
      }
  }
 
-int main(int argc, char** argv)
+//int main(int argc, char** argv)
+int main(int argc, char* argv[])
 {
 	//MPI-Variablen
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
@@ -61,18 +62,19 @@ int main(int argc, char** argv)
 	printf("\n");
 	
 	//Initialisierung der MPI Umgebung
-	MPI_Init(&argc, &argv);
+//	MPI_Init(&argc, &argv);
+	MPI_Init(0, 0);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank_world);
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
 	
 	//Festlegen von n
 	if (rank_world == 0)
 	{
-		if(argc == 0) {
+		if(argc == 2) {
+			n = atoi(argv[1]);
+		} else {
 			printf("Gib n ein:\n");
 			while (scanf("%i", &n) != 1) while (getchar() != '\n');
-		} else {
-			n = atoi(argv(1));
 		}
 
 		//MPI_Scatter(&n, 1, MPI_INT, &n, 1, MPI_INT, 0, MPI_COMM_WORLD);

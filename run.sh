@@ -66,4 +66,4 @@ echo "${HOSTNR} hosts online"
 
 ##3## run program on this hosts
 echo "STAGE 3 - run $OUTPUTFILENAME on $CPUCOUNT cpus "
-mpirun -np $CPUCOUNT -hostfile $HOSTLISTFILENAME $OUTPUTFILENAME 
+mpirun -np $CPUCOUNT -hostfile $HOSTLISTFILENAME $OUTPUTFILENAME $VRANGE
