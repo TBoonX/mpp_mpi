@@ -144,11 +144,11 @@ int main(int argc, char** argv)
 			//gerade Prozessornummer
 			printf("   gerade Prozessornummer\n");
 			//Sendet Array an Prozessor rank_world-1
-			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
+			MPI_Send(&local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
 			printf("   gesendet\n");
 			
 			//Erhalte oberen Teil des sortieren Arrays
-			MPI_Recv(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
+			MPI_Recv(&temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
 			
 			printf("   ausgetauscht\n");
 			
@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 			//ungerade Prozessornummer
 			printf("   ungerade Prozessornummer\n");
 			//erhalte Array
-			MPI_Recv(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
+			MPI_Recv(&temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
 			
 			printf("   erhalten\n");
 			
@@ -190,7 +190,7 @@ int main(int argc, char** argv)
 			printf("   temp beschrieben\n");
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
+			MPI_Send(&temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 			
 			printf("   temp gesendet\n");
 			
@@ -203,7 +203,7 @@ int main(int argc, char** argv)
 		{
 			//gerade Prozessornummer != Prozessoranzahl-1
 			//erhalte Array
-			MPI_Recv(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
+			MPI_Recv(&temp, nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD, status);
 			
 			//füge Arrays zusammen
 			for (i = 0; i < nLocal; i++)
@@ -221,17 +221,17 @@ int main(int argc, char** argv)
 			}
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);			
+			MPI_Send(&temp, nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD);			
 			wtimes[j*4+3] = MPI_Wtime();
 		}
 		else if ((rank_world+1) % 2 == 1 && rank_world != 0)
 		{
 			//ungerade Prozessornummer != 0
 			//Sendet Array an Prozessor rank_world-1
-			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
+			MPI_Send(&local, nLocal, MPI_INT, rank_world-1, 2, MPI_COMM_WORLD);
 			
 			//Erhalte oberen Teil des sortieren Arrays
-			MPI_Recv(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
+			MPI_Recv(&temp, nLocal, MPI_INT, rank_world-1, 2, MPI_COMM_WORLD, status);
 			
 			//eigenes Array aktualisieren
 			for (i = 0; i < nLocal; i++)
@@ -249,7 +249,7 @@ int main(int argc, char** argv)
 	//Prozess 0 sammelt alle array
 	if (rank_world == 0)
 	{
-		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Gather(&local, nLocal, MPI_INT, &ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
 		//Ausgabe
 		printf("Ergebnis:\n");
