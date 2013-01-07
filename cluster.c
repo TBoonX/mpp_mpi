@@ -242,7 +242,7 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-			wtimes[j*4+3] = wtimes[j*4+3];
+			wtimes[j*4+3] = wtimes[j*4+2];
 		}
 	}
 	//Arrays sind sortiert
