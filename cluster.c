@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
 	double wtimesinnersort[p_world*2];	//2 Zeitmessungen für sortiervorgang in (un)geraden Schritt
 	int ergebnis[p_world*nLocal];		//sortiertes Array
 	int singlecore[n];			//von einem Prozess zu sortierendes Array
-	double singlecoretimes[2];		//  Zeit
+	long double singlecoretimes[2];		//  Zeit
 
 	status = malloc(sizeof(MPI_Status));
 	
@@ -113,20 +113,20 @@ int main(int argc, char* argv[])
 		
 		//Array füllen
 		for (i=0;i<n;i++) {
-			singlecore[i] = rand() % n;		//Zahlen 0 bis n
+			singlecore[i] = rand() % (n*5);		//Zahlen 0 bis n*5
 		}
 		
 		singlecoretimes[0] = MPI_Wtime();
 		quicksort(singlecore, 0, n-1);
 		singlecoretimes[1] = MPI_Wtime();
 		
-		printf("   -> T(1) = %f \n\n", singlecoretimes[1]-singlecoretimes[0]);
+		printf("   -> T(1) = %LF \n\n", singlecoretimes[1]-singlecoretimes[0]);
 	}
 	
 	//Zur Hälfte mit Zufallszahlen füllen
 	srand((unsigned)time(NULL));
 	for (i=0;i<nLocal;i++) {
-		local[i] = rand()%n;		//Zahlen 0 bis n
+		local[i] = rand()%(n*5);		//Zahlen 0 bis n*5
 	}
 	
 	if (rank_world == 0)
