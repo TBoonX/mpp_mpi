@@ -102,7 +102,8 @@ int main(int argc, char* argv[])
 	double wtimesinnersort[p_world*2];	//2 Zeitmessungen für sortiervorgang in (un)geraden Schritt
 	int ergebnis[p_world*nLocal];		//sortiertes Array
 	int singlecore[n];			//von einem Prozess zu sortierendes Array
-	long double singlecoretimes[2];		//  Zeit
+	double singlecoretimes[2];		//  Zeit
+	double sequtime = 0;			//Benoetigte sequentielle Zeit
 
 	status = malloc(sizeof(MPI_Status));
 	
@@ -120,7 +121,7 @@ int main(int argc, char* argv[])
 		quicksort(singlecore, 0, n-1);
 		singlecoretimes[1] = MPI_Wtime();
 		
-		printf("   -> T(1) = %LF \n\n", singlecoretimes[1]-singlecoretimes[0]);
+		printf("   -> T(1) = %f \n\n", singlecoretimes[1]-singlecoretimes[0]);
 	}
 	
 	//Zur Hälfte mit Zufallszahlen füllen
@@ -249,7 +250,7 @@ int main(int argc, char* argv[])
 	
 	printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
 	
-	//Prozess 0 sammelt alle array
+	//Prozess 0 sammelt alle Arrays ein
 	if (rank_world == 0)
 	{
 		MPI_Gather(local, nLocal, MPI_INT, &ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
@@ -262,9 +263,20 @@ int main(int argc, char* argv[])
 			
 		printf(" %d\n\n", ergebnis[nLocal*p_world-1]);
 		
-		printf("\n\nDer gesamte Vorgang dauerte %lf Sekunden\n", wtimes[p_world*4-1]-wtimes[0]);
+		printf("\n\nDer gesamte Vorgang dauerte %f Sekunden\n", wtimes[p_world*4-1]-wtimes[0]);
 		
-		printf("\nSpeedup: S(p) = %lf\n\n", (singlecoretimes[1]-singlecoretimes[0])/(wtimes[p_world*4-1]-wtimes[0]) );
+		printf("\nSpeedup: S(p) = %f\n\n", (singlecoretimes[1]-singlecoretimes[0])/(wtimes[p_world*4-1]-wtimes[0]) );
+		
+		//Ermittle sequentiellen Anteil (sortieren)
+		for (i = 0; i < p_world; i++)
+		{
+			sequtime += wtimes[i*4+1]-wtimes[i*4];
+		}
+		sequtime = sequtime/p_world;
+		printf("Phase 1 benoetigte %f Sekunden und somit %f \% der Gesamtzeit.\n", sequtime, (wtimes[p_world*4-1]-wtimes[0])/sequtime);
+		
+		//Ermittle Zeit die fuer die Kommunikation benötigt wird
+		
 	}
 	else
 	{
