@@ -273,7 +273,7 @@ int main(int argc, char* argv[])
 			sequtime += wtimes[i*4+1]-wtimes[i*4];
 		}
 		sequtime = sequtime/p_world;
-		printf("Phase 1 benoetigte %f Sekunden und somit %f \% der Gesamtzeit.\n", sequtime, (wtimes[p_world*4-1]-wtimes[0])/sequtime);
+		printf("Phase 1 benoetigte %f Sekunden und somit %f Prozent der Gesamtzeit.\n", sequtime, sequtime/(wtimes[p_world*4-1]-wtimes[0]));
 		
 		//Ermittle Zeit die fuer die Kommunikation benötigt wird
 		
