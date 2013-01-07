@@ -104,6 +104,7 @@ int main(int argc, char* argv[])
 	int singlecore[n];			//von einem Prozess zu sortierendes Array
 	double singlecoretimes[2];		//  Zeit
 	double sequtime = 0;			//Benoetigte sequentielle Zeit
+	double comtime = 0;
 
 	status = malloc(sizeof(MPI_Status));
 	
@@ -180,9 +181,9 @@ int main(int argc, char* argv[])
 				local[nLocal+i] = temp[i];
 			
 			//sortiere Array
-			wtimesinnersort[0] = MPI_Wtime();
+			wtimesinnersort[j*2+0] = MPI_Wtime();
 			quicksort(local, 0, nLocal*2-1);
-			wtimesinnersort[1] = MPI_Wtime();
+			wtimesinnersort[j*2+1] = MPI_Wtime();
 			
 			printf("   sortiert\n");
 			
@@ -213,9 +214,9 @@ int main(int argc, char* argv[])
 				local[nLocal+i] = temp[i];
 			
 			//sortiere Array
-			wtimesinnersort[0] = MPI_Wtime();
+			wtimesinnersort[j*2+0] = MPI_Wtime();
 			quicksort(local,  0, nLocal*2-1);
-			wtimesinnersort[1] = MPI_Wtime();
+			wtimesinnersort[j*2+1] = MPI_Wtime();
 			
 			//oberen Teil des Array zum zurücksenden vorbereiten
 			for (i = 0; i < nLocal; i++)
@@ -244,6 +245,12 @@ int main(int argc, char* argv[])
 		else
 		{
 			wtimes[j*4+3] = wtimes[j*4+2];
+			
+			//Letzter Prozess fuehrt geraden Schritt nicht aus
+			if (rank_world == p_world-1)
+			{
+				wtimesinnersort[j*2] = wtimesinnersort[j*2+1] = 0;
+			}
 		}
 	}
 	//Arrays sind sortiert
@@ -275,8 +282,17 @@ int main(int argc, char* argv[])
 		sequtime = sequtime/p_world;
 		printf("Phase 1 benoetigte %f Sekunden und somit %f Prozent der Gesamtzeit.\n", sequtime, sequtime/(wtimes[p_world*4-1]-wtimes[0]));
 		
-		//Ermittle Zeit die fuer die Kommunikation benötigt wird
-		
+		//Ermittle Zeit die fuer die Kommunikation benötigt wurde
+		for (i = 0; i < p_world; i++)
+		{
+			//ungerader Schritt
+			comtime += (wtimes[i*4+2 - wtimes[i*4+1]);
+			//gerader Schritt
+			comtime += (wtimes[i*4+3 - wtimes[i*4+2]);
+			//Zeit für sortieren abziehen
+			comtime -= wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
+		}
+		printf("Der Komminikationsoverhead betrung %f Sekunden und somit %f Prozent.\n", comtime, comtime/(wtimes[p_world*4-1]-wtimes[0]));
 	}
 	else
 	{
