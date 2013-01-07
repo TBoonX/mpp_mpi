@@ -10,6 +10,7 @@
  * Kommunikation zwischen Slaves findet mit MPI_Send/Recv statt. Besser:  MPI_Bsend
  * Am Ende sammelt Master mit MPI-Gather alle Arrays ein.
  * Zeiterfassung erfolgt mit MPI_Wtime.
+ * Jeder Prozess erhebt die zu messenden Daten zu seinen erfassten Zeiten und teilt sie dem Master mit. <- TODO
 */
 
 // siehe http://en.wikibooks.org/wiki/Algorithm_implementation/Sorting/Quicksort#C
@@ -292,7 +293,7 @@ int main(int argc, char* argv[])
 			//Zeit für sortieren abziehen
 			comtime -= wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
 		}
-		printf("Der Komminikationsoverhead betrung %f Sekunden und somit %f Prozent.\n", comtime, comtime/(wtimes[p_world*4-1]-wtimes[0]));
+		printf("Der Kommunikationsoverhead betrung %f Sekunden und somit %f Prozent.\n", comtime, comtime/(wtimes[p_world*4-1]-wtimes[0]));
 	}
 	else
 	{
