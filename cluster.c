@@ -286,9 +286,9 @@ int main(int argc, char* argv[])
 		for (i = 0; i < p_world; i++)
 		{
 			//ungerader Schritt
-			comtime += (wtimes[i*4+2 - wtimes[i*4+1]);
+			comtime += (wtimes[i*4+2] - wtimes[i*4+1]);
 			//gerader Schritt
-			comtime += (wtimes[i*4+3 - wtimes[i*4+2]);
+			comtime += (wtimes[i*4+3] - wtimes[i*4+2]);
 			//Zeit für sortieren abziehen
 			comtime -= wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
 		}
