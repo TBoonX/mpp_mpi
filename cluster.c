@@ -268,6 +268,17 @@ int main(int argc, char* argv[])
 	
 	printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
 	
+	if (debug)
+	{
+		//Ausgabe von wtimes
+		printf("\nP%d:  wtimes:\n", rank_world);
+		for (i = 0; i < p_world; i++)
+		{
+			printf("P%d: wtimes[%d]=%f\n", rank_world, i, wtimes[i]);
+		}
+		printf("\n");
+	}
+	
 	//Jeder Prozess errechnet die zu betrachtenden Zeiten und Werte
 	//Gesamtzeit
 	overalltime = wtimes[p_world*4-1]-wtimes[0];
