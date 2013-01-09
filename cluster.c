@@ -10,11 +10,12 @@
  * Kommunikation zwischen Slaves findet mit MPI_Send/Recv statt. Besser:  MPI_Bsend
  * Am Ende sammelt Master mit MPI-Gather alle Arrays ein.
  * Zeiterfassung erfolgt mit MPI_Wtime.
- * Jeder Prozess erhebt die zu messenden Daten zu seinen erfassten Zeiten und teilt sie dem Master mit MPI_Reduce() mit. <- TODO
+ * Jeder Prozess erhebt die zu messenden Daten zu seinen erfassten Zeiten und teilt sie dem Master mit MPI_Reduce() mit.
 */
 
 // siehe http://en.wikibooks.org/wiki/Algorithm_implementation/Sorting/Quicksort#C
 int partition(int y[], int f, int l) {
+     boolean d = true; 	//debug
      int up,down,temp;
      int piv = y[f];
      up = f;
@@ -46,7 +47,6 @@ void quicksort(int x[], int first, int last) {
      }
  }
 
-//int main(int argc, char** argv)
 int main(int argc, char* argv[])
 {
 	//MPI-Variablen
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 	printf("\n");
 	
 	//Initialisierung der MPI Umgebung
-//	MPI_Init(&argc, &argv);
+//	MPI_Init(&argc, &argv);	//Error: Argumente koennen nicht korrekt durchgereicht werden
 	MPI_Init(0, 0);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank_world);
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
@@ -70,9 +70,9 @@ int main(int argc, char* argv[])
 	//Festlegen von n
 	if (rank_world == 0)
 	{
-		if(argc == 2) {
+		if(argc == 2) {	// wenn n als Startparameter uebergeben wurde
 			n = atoi(argv[1]);
-		} else {
+		} else {	// sonst von Benutzer erfragen
 			printf("Gib n ein:\n");
 			while (scanf("%i", &n) != 1) while (getchar() != '\n');
 		}
@@ -142,10 +142,10 @@ int main(int argc, char* argv[])
 	for (j = 0; j < p_world; j++)
 	{
 		//Vorstufe
-		printf("P %d: Start Vorstufe\n", rank_world);
+		if(d) printf("P %d: Start Vorstufe\n", rank_world);
 		wtimes[j*4] = MPI_Wtime();
 		quicksort(local, 0, nLocal-1);
-		printf("P %d: Ende Vorstufe\n   Start ungerader Schritt\n", rank_world);
+		if(d) printf("P %d: Ende Vorstufe\n   Start ungerader Schritt\n", rank_world);
 		
 		wtimes[j*4+1] = MPI_Wtime();
 		
@@ -153,15 +153,15 @@ int main(int argc, char* argv[])
 		if ((rank_world+1) % 2 == 0)
 		{
 			//gerade Prozessornummer
-			printf("   gerade Prozessornummer\n");
+			if(d) printf("   gerade Prozessornummer\n");
 			//Sendet Array an Prozessor rank_world-1
 			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
-			printf("   gesendet\n");
+			if(d) printf("   gesendet\n");
 			
 			//Erhalte oberen Teil des sortieren Arrays
 			MPI_Recv(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
 			
-			printf("   ausgetauscht\n");
+			(d) printf("   ausgetauscht\n");
 			
 			//eigenes Array aktualisieren
 			for (i = 0; i < nLocal; i++)
@@ -169,16 +169,16 @@ int main(int argc, char* argv[])
 				
 			wtimes[j*4+2] = MPI_Wtime();
 			
-			printf("   ungeraden Schritt beendet\n");
+			if(d) printf("   ungeraden Schritt beendet\n");
 		}
 		else
 		{
 			//ungerade Prozessornummer
-			printf("   ungerade Prozessornummer\n");
+			if(d) printf("   ungerade Prozessornummer\n");
 			//erhalte Array
 			MPI_Recv(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
 			
-			printf("   erhalten\n");
+			if(d) printf("   erhalten\n");
 			
 			//füge Arrays zusammen
 			for (i = 0; i < nLocal; i++)
@@ -189,23 +189,23 @@ int main(int argc, char* argv[])
 			quicksort(local, 0, nLocal*2-1);
 			wtimesinnersort[j*2+1] = MPI_Wtime();
 			
-			printf("   sortiert\n");
+			if(d) printf("   sortiert\n");
 			
 			//oberen Teil des Array zum zurücksenden vorbereiten
 			for (i = 0; i < nLocal; i++)
 				temp[i] = local[nLocal+i];
 			
-			printf("   temp beschrieben\n");
+			if(d) printf("   temp beschrieben\n");
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
 			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 			
-			printf("   temp gesendet\n");
+			if(d) printf("   temp gesendet\n");
 			
 			wtimes[j*4+2] = MPI_Wtime();
 		}
 		
-		printf("P %d: Ende ungerader Schritt\nStart gerader Schritt\n", rank_world);
+		if(d) printf("P %d: Ende ungerader Schritt\nStart gerader Schritt\n", rank_world);
 		//gerader Schritt
 		if ((rank_world+1) % 2 == 0 && rank_world != p_world-1)
 		{
