@@ -249,12 +249,15 @@ int main(int argc, char* argv[])
 	//Jeder Prozess errechnet die zu betrachtenden Zeiten und Werte
 	//Gesamtzeit
 	overalltime = (wtimesoverall[1]-wtimesoverall[0])+(wtimesphase1[1]-wtimesphase1[0]);
+	printf("\nP %d: overalltime=%f\n", rank_world, overalltime);
 	
 	//Speedup
 	speedup = (singlecoretimes[1]-singlecoretimes[0])/overalltime;
+	printf("P %d: speedup=%f\n", rank_world, speedup);
 	
 	//sequentieller Anteil (Sortiervorgang)
 	phase1 = wtimesphase1[1]-wtimesphase1[0];
+	printf("P %d: phase1=%f\n", rank_world, phase1);
 	
 	//Zeit die fuer die Kommunikation benötigt wurde
 	for (i = 0; i < p_world; i++)
@@ -262,6 +265,7 @@ int main(int argc, char* argv[])
 		comtime = comtime+wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
 	}
 	comtime = overalltime-phase1-comtime;
+	printf("P %d: comtime=%f\n", rank_world, comtime);
 	
 	//Prozess 0 sammelt Werte ein
 	
