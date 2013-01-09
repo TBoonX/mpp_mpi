@@ -48,7 +48,7 @@ void quicksort(int x[], int first, int last) {
 
 int main(int argc, char* argv[])
 {
-	int debug = 0;
+	int debug = 1;
 	
 	//MPI-Variablen
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
@@ -272,7 +272,7 @@ int main(int argc, char* argv[])
 	{
 		//Ausgabe von wtimes
 		printf("\nP%d:  wtimes:\n", rank_world);
-		for (i = 0; i < p_world; i++)
+		for (i = 0; i < p_world*4; i++)
 		{
 			printf("P%d: wtimes[%d]=%f\n", rank_world, i, wtimes[i]);
 		}
