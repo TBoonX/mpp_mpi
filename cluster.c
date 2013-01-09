@@ -104,6 +104,10 @@ int main(int argc, char* argv[])
 	int ergebnis[p_world*nLocal];		//sortiertes Array
 	int singlecore[n];			//von einem Prozess zu sortierendes Array
 	double singlecoretimes[2];		//  Zeit
+	double overalltime, overalltime_p;	//Gesamtzeit gesamt
+	double speedup, speedup_p;		//Speedup
+	double phase1, phase1_p;		//Zeit fuer Phase 1
+	double comoverhead, comoverhead_p;	//Kommunikationsoverhead
 	double sequtime = 0;			//Benoetigte sequentielle Zeit
 	double comtime = 0;
 
