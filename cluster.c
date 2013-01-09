@@ -169,8 +169,6 @@ int main(int argc, char* argv[])
 			//Erhalte oberen Teil des sortieren Arrays
 			MPI_Recv(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
 			
-			if(debug) printf("   ausgetauscht\n");
-			
 			if(debug) printf("   ungeraden Schritt beendet\n");
 		}
 		else
@@ -191,6 +189,7 @@ int main(int argc, char* argv[])
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
 			MPI_Send(&local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
+			if(debug) printf("   gesendet\n");
 		}
 		
 		if(debug) printf("P %d: Ende ungerader Schritt\nStart gerader Schritt\n", rank_world);
@@ -233,31 +232,31 @@ int main(int argc, char* argv[])
 	
 	printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
 	
-	/*
+	
 	if (debug)
 	{
 		//Ausgabe von wtimes
 		printf("\nP%d:  wtimes:\n", rank_world);
-		for (i = 0; i < p_world*4; i++)
+		for (i = 0; i < p_world*2; i++)
 		{
-			printf("P%d: wtimes[%d]=%f\n", rank_world, i, wtimes[i]);
+			printf("P%d: wtimesinnersort[%d]=%f\n", rank_world, i, wtimesinnersort[i]);
 		}
 		printf("\n");
 	}
-	*/
+	
 	
 	//Jeder Prozess errechnet die zu betrachtenden Zeiten und Werte
 	//Gesamtzeit
 	overalltime = (wtimesoverall[1]-wtimesoverall[0])+(wtimesphase1[1]-wtimesphase1[0]);
-	printf("\nP %d: overalltime=%f\n", rank_world, overalltime);
+	if(debug) printf("\nP %d: overalltime=%f\n", rank_world, overalltime);
 	
 	//Speedup
 	speedup = (singlecoretimes[1]-singlecoretimes[0])/overalltime;
-	printf("P %d: speedup=%f\n", rank_world, speedup);
+	if(debug) printf("P %d: speedup=%f\n", rank_world, speedup);
 	
 	//sequentieller Anteil (Sortiervorgang)
 	phase1 = wtimesphase1[1]-wtimesphase1[0];
-	printf("P %d: phase1=%f\n", rank_world, phase1);
+	if(debug) printf("P %d: phase1=%f\n", rank_world, phase1);
 	
 	//Zeit die fuer die Kommunikation benötigt wurde
 	for (i = 0; i < p_world; i++)
@@ -265,7 +264,7 @@ int main(int argc, char* argv[])
 		comtime = comtime+wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
 	}
 	comtime = overalltime-phase1-comtime;
-	printf("P %d: comtime=%f\n", rank_world, comtime);
+	if(debug) printf("P %d: comtime=%f\n", rank_world, comtime);
 	
 	//Prozess 0 sammelt Werte ein
 	
