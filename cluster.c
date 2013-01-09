@@ -308,15 +308,15 @@ int main(int argc, char* argv[])
 	{
 		MPI_Gather(local, nLocal, MPI_INT, &ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
-		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n")
+		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 		
 		printf("\nDer gesamte Vorgang dauerte %f Sekunden\n", overalltime_p/p_world);
 		
 		printf("\nSpeedup: S(p) = %f\n", speedup_p/p_world );
 		
-		printf("\nPhase 1 benoetigte %f Sekunden und somit %f Prozent der Gesamtzeit.\n", phase1_p/p_world,(phase1_p/p_world) / (overalltime_p\p_world) );
+		printf("\nPhase 1 benoetigte %f Sekunden und somit %f Prozent der Gesamtzeit.\n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world) );
 		
-		printf("\nDer Kommunikationsoverhead betrung %f Sekunden und somit %f Prozent.\n", comtime_p/p_world, (comtime_p/p_world) / (overalltime_p\p_world) );
+		printf("\nDer Kommunikationsoverhead betrung %f Sekunden und somit %f Prozent.\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world) );
 	}
 	else
 	{
