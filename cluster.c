@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 	//Anzahl der zu sortierenden Elemente pro Prozessor
 	nLocal = n/p_world;
 
-	printf("P %d: n = %d\n", rank_world, n);
+	if(debug) printf("P %d: n = %d\n", rank_world, n);
 
 	//Test auf korrekte Parameter
 	if( p_world < 2 || p_world%2 !=0 || n%p_world != 0)	// Gerade Anzahl Prozesse >=2 und n Vielfaches von p?
@@ -113,7 +113,10 @@ int main(int argc, char* argv[])
 
 	status = malloc(sizeof(MPI_Status));
 	
-	printf("P %d: Initialisierung beendet.\n", rank_world);
+	printf("\nNachfolgend wird ein Array der Groesse %d mit Zufallszahlen nach dem Merge-Splitting Verfahren sortiert.\n", n);
+	printf(" -> %d Cluster\n\n", p_world);
+	
+	if(debug) printf("P %d: Initialisierung beendet.\n", rank_world);
 	
 	if (rank_world == 0) {
 		printf("\nBestimmung von T(1)...\n");
