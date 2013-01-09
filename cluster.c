@@ -108,7 +108,6 @@ int main(int argc, char* argv[])
 	double overalltime, overalltime_p;	//Gesamtzeit gesamt
 	double speedup, speedup_p;		//Speedup
 	double phase1, phase1_p;		//Zeit fuer Phase 1
-	double sequtime = 0;			//Benoetigte sequentielle Zeit
 	double comtime = 0, comtime_p;		//           Zeit zur Kommunikation - Kommunikationsoverhead
 
 	status = malloc(sizeof(MPI_Status));
@@ -234,6 +233,7 @@ int main(int argc, char* argv[])
 	
 	printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
 	
+	/*
 	if (debug)
 	{
 		//Ausgabe von wtimes
@@ -244,6 +244,7 @@ int main(int argc, char* argv[])
 		}
 		printf("\n");
 	}
+	*/
 	
 	//Jeder Prozess errechnet die zu betrachtenden Zeiten und Werte
 	//Gesamtzeit
