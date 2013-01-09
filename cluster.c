@@ -266,7 +266,7 @@ int main(int argc, char* argv[])
 	overalltime = wtimes[p_world*4-1]-wtimes[0];
 	
 	//Speedup
-	speedup = (singlecoretimes[1]-singlecoretimes[0])/(wtimes[p_world*4-1]-wtimes[0]);
+	speedup = (singlecoretimes[1]-singlecoretimes[0])/overalltime;
 	
 	//sequentieller Anteil (Sortiervorgang)
 	for (i = 0; i < p_world; i++)
@@ -314,9 +314,9 @@ int main(int argc, char* argv[])
 		
 		printf("\nSpeedup: S(p) = %f\n", speedup_p/p_world );
 		
-		printf("\nPhase 1 benoetigte %f Sekunden und somit %f Prozent der Gesamtzeit.\n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world) );
+		printf("\nPhase 1 benoetigte %f Sekunden und somit %f Prozent der Laufzeit.\n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
 		
-		printf("\nDer Kommunikationsoverhead betrung %f Sekunden und somit %f Prozent.\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world) );
+		printf("\nDer Kommunikationsoverhead betrung %f Sekunden und somit %f Prozent der Laufzeit.\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world)*100 );
 	}
 	else
 	{
