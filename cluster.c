@@ -179,7 +179,7 @@ int main(int argc, char* argv[])
 			//ungerade Prozessornummer
 			if(debug) printf("   ungerade Prozessornummer\n");
 			//erhalte Array
-			MPI_Recv(local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
+			MPI_Recv(&local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
 			
 			if(debug) printf("   erhalten\n");
 			
@@ -191,7 +191,7 @@ int main(int argc, char* argv[])
 			if(debug) printf("   sortiert\n");
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
+			MPI_Send(&local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 		}
 		
 		if(debug) printf("P %d: Ende ungerader Schritt\nStart gerader Schritt\n", rank_world);
@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
 		{
 			//gerade Prozessornummer != Prozessoranzahl-1
 			//erhalte Array
-			MPI_Recv(local[nLocal], nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD, status);
+			MPI_Recv(&local[nLocal], nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD, status);
 			
 			//sortiere Array
 			wtimesinnersort[j*2+0] = MPI_Wtime();
@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
 			wtimesinnersort[j*2+1] = MPI_Wtime();
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(local[nLocal], nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD);
+			MPI_Send(&local[nLocal], nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD);
 		}
 		else if ((rank_world+1) % 2 == 1 && rank_world != 0)
 		{
