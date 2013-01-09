@@ -15,7 +15,6 @@
 
 // siehe http://en.wikibooks.org/wiki/Algorithm_implementation/Sorting/Quicksort#C
 int partition(int y[], int f, int l) {
-     boolean d = true; 	//debug
      int up,down,temp;
      int piv = y[f];
      up = f;
@@ -49,6 +48,8 @@ void quicksort(int x[], int first, int last) {
 
 int main(int argc, char* argv[])
 {
+	int debug = 0;
+	
 	//MPI-Variablen
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
 	int p_world;			// Anzahl Prozesse in MPI_COMM_WORLD
@@ -112,7 +113,7 @@ int main(int argc, char* argv[])
 
 	status = malloc(sizeof(MPI_Status));
 	
-	printf("P %d: Initialisierung beendet.\n -> nLocal = %d\n", rank_world, nLocal);
+	printf("P %d: Initialisierung beendet.\n", rank_world);
 	
 	if (rank_world == 0) {
 		printf("\nBestimmung von T(1)...\n");
@@ -142,10 +143,10 @@ int main(int argc, char* argv[])
 	for (j = 0; j < p_world; j++)
 	{
 		//Vorstufe
-		if(d) printf("P %d: Start Vorstufe\n", rank_world);
+		if(debug) printf("P %d: Start Vorstufe\n", rank_world);
 		wtimes[j*4] = MPI_Wtime();
 		quicksort(local, 0, nLocal-1);
-		if(d) printf("P %d: Ende Vorstufe\n   Start ungerader Schritt\n", rank_world);
+		if(debug) printf("P %d: Ende Vorstufe\n   Start ungerader Schritt\n", rank_world);
 		
 		wtimes[j*4+1] = MPI_Wtime();
 		
@@ -153,15 +154,15 @@ int main(int argc, char* argv[])
 		if ((rank_world+1) % 2 == 0)
 		{
 			//gerade Prozessornummer
-			if(d) printf("   gerade Prozessornummer\n");
+			if(debug) printf("   gerade Prozessornummer\n");
 			//Sendet Array an Prozessor rank_world-1
 			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
-			if(d) printf("   gesendet\n");
+			if(debug) printf("   gesendet\n");
 			
 			//Erhalte oberen Teil des sortieren Arrays
 			MPI_Recv(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
 			
-			(d) printf("   ausgetauscht\n");
+			if(debug) printf("   ausgetauscht\n");
 			
 			//eigenes Array aktualisieren
 			for (i = 0; i < nLocal; i++)
@@ -169,16 +170,16 @@ int main(int argc, char* argv[])
 				
 			wtimes[j*4+2] = MPI_Wtime();
 			
-			if(d) printf("   ungeraden Schritt beendet\n");
+			if(debug) printf("   ungeraden Schritt beendet\n");
 		}
 		else
 		{
 			//ungerade Prozessornummer
-			if(d) printf("   ungerade Prozessornummer\n");
+			if(debug) printf("   ungerade Prozessornummer\n");
 			//erhalte Array
 			MPI_Recv(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
 			
-			if(d) printf("   erhalten\n");
+			if(debug) printf("   erhalten\n");
 			
 			//füge Arrays zusammen
 			for (i = 0; i < nLocal; i++)
@@ -189,23 +190,23 @@ int main(int argc, char* argv[])
 			quicksort(local, 0, nLocal*2-1);
 			wtimesinnersort[j*2+1] = MPI_Wtime();
 			
-			if(d) printf("   sortiert\n");
+			if(debug) printf("   sortiert\n");
 			
 			//oberen Teil des Array zum zurücksenden vorbereiten
 			for (i = 0; i < nLocal; i++)
 				temp[i] = local[nLocal+i];
 			
-			if(d) printf("   temp beschrieben\n");
+			if(debug) printf("   temp beschrieben\n");
 			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
 			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 			
-			if(d) printf("   temp gesendet\n");
+			if(debug) printf("   temp gesendet\n");
 			
 			wtimes[j*4+2] = MPI_Wtime();
 		}
 		
-		if(d) printf("P %d: Ende ungerader Schritt\nStart gerader Schritt\n", rank_world);
+		if(debug) printf("P %d: Ende ungerader Schritt\nStart gerader Schritt\n", rank_world);
 		//gerader Schritt
 		if ((rank_world+1) % 2 == 0 && rank_world != p_world-1)
 		{
