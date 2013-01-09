@@ -259,7 +259,7 @@ int main(int argc, char* argv[])
 	//Zeit die fuer die Kommunikation benötigt wurde
 	for (i = 0; i < p_world; i++)
 	{
-		comtime += wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
+		comtime = comtime+wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
 	}
 	comtime = overalltime-phase1-comtime;
 	
