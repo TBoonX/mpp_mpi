@@ -10,7 +10,7 @@
  * Kommunikation zwischen Slaves findet mit MPI_Send/Recv statt. Besser:  MPI_Bsend
  * Am Ende sammelt Master mit MPI-Gather alle Arrays ein.
  * Zeiterfassung erfolgt mit MPI_Wtime.
- * Jeder Prozess erhebt die zu messenden Daten zu seinen erfassten Zeiten und teilt sie dem Master mit. <- TODO
+ * Jeder Prozess erhebt die zu messenden Daten zu seinen erfassten Zeiten und teilt sie dem Master mit MPI_Reduce() mit. <- TODO
 */
 
 // siehe http://en.wikibooks.org/wiki/Algorithm_implementation/Sorting/Quicksort#C
@@ -107,9 +107,8 @@ int main(int argc, char* argv[])
 	double overalltime, overalltime_p;	//Gesamtzeit gesamt
 	double speedup, speedup_p;		//Speedup
 	double phase1, phase1_p;		//Zeit fuer Phase 1
-	double comoverhead, comoverhead_p;	//Kommunikationsoverhead
 	double sequtime = 0;			//Benoetigte sequentielle Zeit
-	double comtime = 0;
+	double comtime = 0, comtime_p;		//           Zeit zur Kommunikation - Kommunikationsoverhead
 
 	status = malloc(sizeof(MPI_Status));
 	
@@ -262,42 +261,62 @@ int main(int argc, char* argv[])
 	
 	printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
 	
-	//Prozess 0 sammelt alle Arrays ein
+	//Jeder Prozess errechnet die zu betrachtenden Zeiten und Werte
+	//Gesamtzeit
+	overalltime = wtimes[p_world*4-1]-wtimes[0];
+	
+	//Speedup
+	speedup = (singlecoretimes[1]-singlecoretimes[0])/(wtimes[p_world*4-1]-wtimes[0]);
+	
+	//sequentieller Anteil (Sortiervorgang)
+	for (i = 0; i < p_world; i++)
+	{
+		sequtime += wtimes[i*4+1]-wtimes[i*4];
+	}
+	phase1 = sequtime/p_world;
+	
+	//Zeit die fuer die Kommunikation benötigt wurde
+	for (i = 0; i < p_world; i++)
+	{
+		//ungerader Schritt
+		comtime += (wtimes[i*4+2] - wtimes[i*4+1]);
+		//gerader Schritt
+		comtime += (wtimes[i*4+3] - wtimes[i*4+2]);
+		//Zeit für sortieren abziehen
+		comtime -= wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
+	}
+	
+	
+	//Prozess 0 sammelt Werte ein
+	
+	//Gesamtzeit
+	MPI_Reduce(&overalltime, &overalltime_p, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+	
+	//Speedup
+	MPI_Reduce(&speedup, &speedup_p, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+	
+	//Phase 1
+	MPI_Reduce(&phase1, &phase1_p, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+	
+	//Zeit der Kommunikation
+	MPI_Reduce(&comtime, &comtime_p, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+	
+	
+	
+	//Prozess 0 sammelt alle sortierten Zahlen-Arrays ein und gibt die Ergebnisse aus
 	if (rank_world == 0)
 	{
 		MPI_Gather(local, nLocal, MPI_INT, &ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
-		//Ausgabe
-		printf("Ergebnis:\n");
+		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n")
 		
-		for (i = 0; i < nLocal*p_world-2; i++)
-			printf(" %d, ", ergebnis[i]);
-			
-		printf(" %d\n\n", ergebnis[nLocal*p_world-1]);
+		printf("\nDer gesamte Vorgang dauerte %f Sekunden\n", overalltime_p/p_world);
 		
-		printf("\n\nDer gesamte Vorgang dauerte %f Sekunden\n", wtimes[p_world*4-1]-wtimes[0]);
+		printf("\nSpeedup: S(p) = %f\n", speedup_p/p_world );
 		
-		printf("\nSpeedup: S(p) = %f\n\n", (singlecoretimes[1]-singlecoretimes[0])/(wtimes[p_world*4-1]-wtimes[0]) );
+		printf("\nPhase 1 benoetigte %f Sekunden und somit %f Prozent der Gesamtzeit.\n", phase1_p/p_world,(phase1_p/p_world) / (overalltime_p\p_world) );
 		
-		//Ermittle sequentiellen Anteil (sortieren)
-		for (i = 0; i < p_world; i++)
-		{
-			sequtime += wtimes[i*4+1]-wtimes[i*4];
-		}
-		sequtime = sequtime/p_world;
-		printf("Phase 1 benoetigte %f Sekunden und somit %f Prozent der Gesamtzeit.\n", sequtime, sequtime/(wtimes[p_world*4-1]-wtimes[0]));
-		
-		//Ermittle Zeit die fuer die Kommunikation benötigt wurde
-		for (i = 0; i < p_world; i++)
-		{
-			//ungerader Schritt
-			comtime += (wtimes[i*4+2] - wtimes[i*4+1]);
-			//gerader Schritt
-			comtime += (wtimes[i*4+3] - wtimes[i*4+2]);
-			//Zeit für sortieren abziehen
-			comtime -= wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
-		}
-		printf("Der Kommunikationsoverhead betrung %f Sekunden und somit %f Prozent.\n", comtime, comtime/(wtimes[p_world*4-1]-wtimes[0]));
+		printf("\nDer Kommunikationsoverhead betrung %f Sekunden und somit %f Prozent.\n", comtime_p/p_world, (comtime_p/p_world) / (overalltime_p\p_world) );
 	}
 	else
 	{
