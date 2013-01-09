@@ -113,8 +113,11 @@ int main(int argc, char* argv[])
 
 	status = malloc(sizeof(MPI_Status));
 	
-	printf("\nNachfolgend wird ein Array der Groesse %d mit Zufallszahlen nach dem Merge-Splitting Verfahren sortiert.\n", n);
-	printf(" -> %d Cluster\n\n", p_world);
+	if (rank_world == 0)
+	{
+		printf("\nNachfolgend wird ein Array der Groesse %d mit Zufallszahlen nach dem Merge-Splitting Verfahren sortiert.\n", n);
+		printf(" -> %d Cluster\n\n", p_world);
+	}
 	
 	if(debug) printf("P %d: Initialisierung beendet.\n", rank_world);
 	
