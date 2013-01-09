@@ -99,9 +99,9 @@ int main(int argc, char* argv[])
 	
 	//Deklarieren der Arrays
 	int local[2 * nLocal];			//lokales Array doppelter Größe
-	int temp[nLocal*5];			//temporäres Array für Schritte
-	double wtimes[p_world*4];		//Zeitmessungen: 4 pro Runde pro Prozessor
 	double wtimesinnersort[p_world*2];	//2 Zeitmessungen für sortiervorgang in (un)geraden Schritt
+	double wtimesphase1[2];		//Zeiten zu Messung der Vorstufe
+	double wtimesoverall[2];		//Zeiten zur Bestimmung der gesamten Laufzeit
 	int ergebnis[p_world*nLocal];		//sortiertes Array
 	int singlecore[n];			//von einem Prozess zu sortierendes Array
 	double singlecoretimes[2];		//  Zeit
@@ -121,20 +121,21 @@ int main(int argc, char* argv[])
 	
 	if(debug) printf("P %d: Initialisierung beendet.\n", rank_world);
 	
-	if (rank_world == 0) {
-		printf("\nBestimmung von T(1)...\n");
+	
+	printf("\nP %d: Bestimmung von T(1)...\n", rank_world);
 		
-		//Array füllen
-		for (i=0;i<n;i++) {
-			singlecore[i] = rand() % (n*5);		//Zahlen 0 bis n*5
-		}
-		
-		singlecoretimes[0] = MPI_Wtime();
-		quicksort(singlecore, 0, n-1);
-		singlecoretimes[1] = MPI_Wtime();
-		
-		printf("   -> T(1) = %f \n\n", singlecoretimes[1]-singlecoretimes[0]);
+	//Array füllen
+	for (i=0;i<n;i++) {
+		singlecore[i] = rand() % (n*5);		//Zahlen 0 bis n*5
 	}
+	
+	singlecoretimes[0] = MPI_Wtime();
+	quicksort(singlecore, 0, n-1);
+	singlecoretimes[1] = MPI_Wtime();
+	
+	printf("P %d:    -> T(1) = %f \n\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
+	
+	
 	
 	//Zur Hälfte mit Zufallszahlen füllen
 	srand((unsigned)time(NULL));
@@ -144,17 +145,18 @@ int main(int argc, char* argv[])
 	
 	if (rank_world == 0)
 		printf("Jeder Prozess erzeugt sein eigenes Array.\nDas Sortierverfahren wird nun gestartet.\n");
+		
+	//Vorstufe
+	if(debug) printf("P %d: Start Vorstufe\n", rank_world);
+	wtimesphase1[0] = MPI_Wtime();
+	quicksort(local, 0, nLocal-1);
+	wtimesphase1[1] = MPI_Wtime();
+	if(debug) printf("P %d: Ende Vorstufe\n   Start ungerader Schritt\n", rank_world);
 	
 	//Wiederhole Runden p_world mal
 	for (j = 0; j < p_world; j++)
 	{
-		//Vorstufe
-		if(debug) printf("P %d: Start Vorstufe\n", rank_world);
-		wtimes[j*4] = MPI_Wtime();
-		quicksort(local, 0, nLocal-1);
-		if(debug) printf("P %d: Ende Vorstufe\n   Start ungerader Schritt\n", rank_world);
-		
-		wtimes[j*4+1] = MPI_Wtime();
+		wtimesoverall[0] = MPI_Wtime();
 		
 		//ungerader Schritt
 		if ((rank_world+1) % 2 == 0)
@@ -166,15 +168,9 @@ int main(int argc, char* argv[])
 			if(debug) printf("   gesendet\n");
 			
 			//Erhalte oberen Teil des sortieren Arrays
-			MPI_Recv(temp, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
+			MPI_Recv(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
 			
 			if(debug) printf("   ausgetauscht\n");
-			
-			//eigenes Array aktualisieren
-			for (i = 0; i < nLocal; i++)
-				local[i] = temp[i];
-				
-			wtimes[j*4+2] = MPI_Wtime();
 			
 			if(debug) printf("   ungeraden Schritt beendet\n");
 		}
@@ -183,13 +179,9 @@ int main(int argc, char* argv[])
 			//ungerade Prozessornummer
 			if(debug) printf("   ungerade Prozessornummer\n");
 			//erhalte Array
-			MPI_Recv(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
+			MPI_Recv(local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
 			
 			if(debug) printf("   erhalten\n");
-			
-			//füge Arrays zusammen
-			for (i = 0; i < nLocal; i++)
-				local[nLocal+i] = temp[i];
 			
 			//sortiere Array
 			wtimesinnersort[j*2+0] = MPI_Wtime();
@@ -198,45 +190,26 @@ int main(int argc, char* argv[])
 			
 			if(debug) printf("   sortiert\n");
 			
-			//oberen Teil des Array zum zurücksenden vorbereiten
-			for (i = 0; i < nLocal; i++)
-				temp[i] = local[nLocal+i];
-			
-			if(debug) printf("   temp beschrieben\n");
-			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
-			
-			if(debug) printf("   temp gesendet\n");
-			
-			wtimes[j*4+2] = MPI_Wtime();
+			MPI_Send(local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
 		}
 		
 		if(debug) printf("P %d: Ende ungerader Schritt\nStart gerader Schritt\n", rank_world);
+		
 		//gerader Schritt
 		if ((rank_world+1) % 2 == 0 && rank_world != p_world-1)
 		{
 			//gerade Prozessornummer != Prozessoranzahl-1
 			//erhalte Array
-			MPI_Recv(temp, nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD, status);
-			
-			//füge Arrays zusammen
-			for (i = 0; i < nLocal; i++)
-				local[nLocal+i] = temp[i];
+			MPI_Recv(local[nLocal], nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD, status);
 			
 			//sortiere Array
 			wtimesinnersort[j*2+0] = MPI_Wtime();
 			quicksort(local,  0, nLocal*2-1);
 			wtimesinnersort[j*2+1] = MPI_Wtime();
 			
-			//oberen Teil des Array zum zurücksenden vorbereiten
-			for (i = 0; i < nLocal; i++)
-				temp[i] = local[nLocal+i];
-			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(temp, nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD);
-			
-			wtimes[j*4+3] = MPI_Wtime();
+			MPI_Send(local[nLocal], nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD);
 		}
 		else if ((rank_world+1) % 2 == 1 && rank_world != 0)
 		{
@@ -245,24 +218,17 @@ int main(int argc, char* argv[])
 			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 2, MPI_COMM_WORLD);
 			
 			//Erhalte oberen Teil des sortieren Arrays
-			MPI_Recv(temp, nLocal, MPI_INT, rank_world-1, 2, MPI_COMM_WORLD, status);
-			
-			//eigenes Array aktualisieren
-			for (i = 0; i < nLocal; i++)
-				local[i] = temp[i];
-			
-			wtimes[j*4+3] = MPI_Wtime();
+			MPI_Recv(local, nLocal, MPI_INT, rank_world-1, 2, MPI_COMM_WORLD, status);
 		}
 		else
 		{
-			wtimes[j*4+3] = wtimes[j*4+2];
-			
 			//Letzter Prozess fuehrt geraden Schritt nicht aus
 			if (rank_world == p_world-1)
 			{
 				wtimesinnersort[j*2] = wtimesinnersort[j*2+1] = 0;
 			}
 		}
+		wtimesoverall[1] = MPI_Wtime();
 	}
 	//Arrays sind sortiert
 	
@@ -281,29 +247,20 @@ int main(int argc, char* argv[])
 	
 	//Jeder Prozess errechnet die zu betrachtenden Zeiten und Werte
 	//Gesamtzeit
-	overalltime = wtimes[p_world*4-1]-wtimes[0];
+	overalltime = (wtimesoverall[1]-wtimesoverall[0])+(wtimesphase1[1]-wtimesphase1[0]);
 	
 	//Speedup
 	speedup = (singlecoretimes[1]-singlecoretimes[0])/overalltime;
 	
 	//sequentieller Anteil (Sortiervorgang)
-	for (i = 0; i < p_world; i++)
-	{
-		sequtime += wtimes[i*4+1]-wtimes[i*4];
-	}
-	phase1 = sequtime/p_world;
+	phase1 = wtimesphase1[1]-wtimesphase1[0];
 	
 	//Zeit die fuer die Kommunikation benötigt wurde
 	for (i = 0; i < p_world; i++)
 	{
-		//ungerader Schritt
-		comtime += (wtimes[i*4+2] - wtimes[i*4+1]);
-		//gerader Schritt
-		comtime += (wtimes[i*4+3] - wtimes[i*4+2]);
-		//Zeit für sortieren abziehen
-		comtime -= wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
+		comtime += wtimesinnersort[i*2+1]-wtimesinnersort[i*2];
 	}
-	
+	comtime = overalltime-phase1-comtime;
 	
 	//Prozess 0 sammelt Werte ein
 	
