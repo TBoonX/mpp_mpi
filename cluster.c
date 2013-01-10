@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
 	quicksort(singlecore, 0, n-1);
 	singlecoretimes[1] = MPI_Wtime();
 	
-	printf("P %d:    -> T(1) = %f \n\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
+	//printf("P %d:    -> T(1) = %f \n\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
 	
 	//-----------------------
 	
@@ -253,6 +253,9 @@ int main(int argc, char* argv[])
 	
 	
 	//Jeder Prozess errechnet die zu betrachtenden Zeiten und Werte
+	
+	if(debug) printf("\nP %d: T(1) = %.20lf\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
+	
 	//Gesamtzeit
 	overalltime = (wtimesoverall[1]-wtimesoverall[0])+(wtimesphase1[1]-wtimesphase1[0]);
 	if(debug) printf("\nP %d: overalltime=%.20lf\n", rank_world, overalltime);
@@ -297,13 +300,13 @@ int main(int argc, char* argv[])
 		
 		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 		
-		printf("\nDer gesamte Vorgang dauerte %.20lf Sekunden\n", overalltime_p/p_world);
+		printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
 		
-		printf("\nSpeedup: S(p) = %.20lf\n", speedup_p/p_world );
+		printf("\nSpeedup: S(p):\n -> %.20lf\n", speedup_p/p_world );
 		
-		printf("\nPhase 1 benoetigte %.20lf Sekunden und somit %.20lf Prozent der Laufzeit.\n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
+		printf("\nPhase 1 benoetigte in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf \n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
 		
-		printf("\nDer Kommunikationsoverhead betrung %.20lf Sekunden und somit %.20lf Prozent der Laufzeit.\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world)*100 );
+		printf("\nDer Kommunikationsoverhead betrung in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world)*100 );
 	}
 	else
 	{
