@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 	//MPI-Variablen
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
 	int p_world;			// Anzahl Prozesse in MPI_COMM_WORLD
-	MPI_Status *status;
+	MPI_Status *status;		//Status für MPI_Recv
 	
 	// Variablen für Merge-Splitting-Sort
 	int n;					//Anzahl der zu sortierenden Elemente
@@ -78,7 +78,8 @@ int main(int argc, char* argv[])
 			while (scanf("%i", &n) != 1) while (getchar() != '\n');
 		}
 	}
-		
+	
+	//n an alle Prozesse verteilen
 	MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	
 	//Anzahl der zu sortierenden Elemente pro Prozessor
@@ -97,6 +98,7 @@ int main(int argc, char* argv[])
 		return 0;	
 	}
 	
+	// Variablen für Merge-Splitting-Sort
 	//Deklarieren der Arrays
 	int local[2 * nLocal];			//lokales Array doppelter Größe
 	double wtimesinnersort[p_world*2];	//2 Zeitmessungen für sortiervorgang in (un)geraden Schritt
@@ -105,12 +107,16 @@ int main(int argc, char* argv[])
 	int ergebnis[p_world*nLocal];		//sortiertes Array
 	int singlecore[n];			//von einem Prozess zu sortierendes Array
 	double singlecoretimes[2];		//  Zeit
-	double overalltime, overalltime_p;	//Gesamtzeit gesamt
+	double overalltime, overalltime_p;	//Gesamtzeit
 	double speedup, speedup_p;		//Speedup
 	double phase1, phase1_p;		//Zeit fuer Phase 1
 	double comtime = 0, comtime_p;		//           Zeit zur Kommunikation - Kommunikationsoverhead
 
+	//Status muss allokiert werden
 	status = malloc(sizeof(MPI_Status));
+	
+	//rand initialisieren
+	srand((unsigned)time(NULL));
 	
 	if (rank_world == 0)
 	{
@@ -120,6 +126,8 @@ int main(int argc, char* argv[])
 	
 	if(debug) printf("P %d: Initialisierung beendet.\n", rank_world);
 	
+	//----------------------
+	//T(1)
 	
 	printf("\nP %d: Bestimmung von T(1)...\n", rank_world);
 		
@@ -128,16 +136,16 @@ int main(int argc, char* argv[])
 		singlecore[i] = rand() % (n*5);		//Zahlen 0 bis n*5
 	}
 	
+	//Zeiten messen und sortieren
 	singlecoretimes[0] = MPI_Wtime();
 	quicksort(singlecore, 0, n-1);
 	singlecoretimes[1] = MPI_Wtime();
 	
 	printf("P %d:    -> T(1) = %f \n\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
 	
+	//-----------------------
 	
-	
-	//Zur Hälfte mit Zufallszahlen füllen
-	srand((unsigned)time(NULL));
+	//local zur Hälfte mit Zufallszahlen füllen
 	for (i=0;i<nLocal;i++) {
 		local[i] = rand()%(n*5);		//Zahlen 0 bis n*5
 	}
@@ -147,57 +155,50 @@ int main(int argc, char* argv[])
 		
 	//Vorstufe
 	if(debug) printf("P %d: Start Vorstufe\n", rank_world);
+	
 	wtimesphase1[0] = MPI_Wtime();
 	quicksort(local, 0, nLocal-1);
 	wtimesphase1[1] = MPI_Wtime();
+	
 	if(debug) printf("P %d: Ende Vorstufe\n   Start ungerader Schritt\n", rank_world);
+	
+	wtimesoverall[0] = MPI_Wtime();
 	
 	//Wiederhole Runden p_world mal
 	for (j = 0; j < p_world; j++)
 	{
-		wtimesoverall[0] = MPI_Wtime();
-		
 		//ungerader Schritt
 		if ((rank_world+1) % 2 == 0)
 		{
 			//gerade Prozessornummer
-			if(debug) printf("   gerade Prozessornummer\n");
+			
 			//Sendet Array an Prozessor rank_world-1
 			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD);
-			if(debug) printf("   gesendet\n");
 			
 			//Erhalte oberen Teil des sortieren Arrays
 			MPI_Recv(local, nLocal, MPI_INT, rank_world-1, 1, MPI_COMM_WORLD, status);
-			
-			if(debug) printf("   ungeraden Schritt beendet\n");
 		}
 		else
 		{
 			//ungerade Prozessornummer
-			if(debug) printf("   ungerade Prozessornummer\n");
+			
 			//erhalte Array
 			MPI_Recv(&local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
-			
-			if(debug) printf("   erhalten\n");
 			
 			//sortiere Array
 			wtimesinnersort[j*2+0] = MPI_Wtime();
 			quicksort(local, 0, nLocal*2-1);
 			wtimesinnersort[j*2+1] = MPI_Wtime();
 			
-			if(debug) printf("   sortiert\n");
-			
 			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
 			MPI_Send(&local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
-			if(debug) printf("   gesendet\n");
 		}
-		
-		if(debug) printf("P %d: Ende ungerader Schritt\nStart gerader Schritt\n", rank_world);
 		
 		//gerader Schritt
 		if ((rank_world+1) % 2 == 0 && rank_world != p_world-1)
 		{
 			//gerade Prozessornummer != Prozessoranzahl-1
+			
 			//erhalte Array
 			MPI_Recv(&local[nLocal], nLocal, MPI_INT, rank_world+1, 2, MPI_COMM_WORLD, status);
 			
@@ -212,6 +213,7 @@ int main(int argc, char* argv[])
 		else if ((rank_world+1) % 2 == 1 && rank_world != 0)
 		{
 			//ungerade Prozessornummer != 0
+			
 			//Sendet Array an Prozessor rank_world-1
 			MPI_Send(local, nLocal, MPI_INT, rank_world-1, 2, MPI_COMM_WORLD);
 			
@@ -226,9 +228,12 @@ int main(int argc, char* argv[])
 				wtimesinnersort[j*2] = wtimesinnersort[j*2+1] = 0;
 			}
 		}
-		wtimesoverall[1] = MPI_Wtime();
 	}
+	
+	wtimesoverall[1] = MPI_Wtime();
+	
 	//Arrays sind sortiert
+	//----------------------------
 	
 	printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
 	
@@ -243,6 +248,8 @@ int main(int argc, char* argv[])
 		}
 		printf("\n");
 	}
+	
+	//----------------------------
 	
 	
 	//Jeder Prozess errechnet die zu betrachtenden Zeiten und Werte
@@ -266,6 +273,7 @@ int main(int argc, char* argv[])
 	comtime = overalltime-phase1-comtime;
 	if(debug) printf("P %d: comtime=%.20lf\n", rank_world, comtime);
 	
+	//---------------------------------------
 	//Prozess 0 sammelt Werte ein
 	
 	//Gesamtzeit
@@ -281,7 +289,7 @@ int main(int argc, char* argv[])
 	MPI_Reduce(&comtime, &comtime_p, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 	
 	
-	
+	//--------------------------------
 	//Prozess 0 sammelt alle sortierten Zahlen-Arrays ein und gibt die Ergebnisse aus
 	if (rank_world == 0)
 	{
@@ -289,13 +297,13 @@ int main(int argc, char* argv[])
 		
 		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 		
-		printf("\nDer gesamte Vorgang dauerte %f Sekunden\n", overalltime_p/p_world);
+		printf("\nDer gesamte Vorgang dauerte %.20lf Sekunden\n", overalltime_p/p_world);
 		
-		printf("\nSpeedup: S(p) = %f\n", speedup_p/p_world );
+		printf("\nSpeedup: S(p) = %.20lf\n", speedup_p/p_world );
 		
-		printf("\nPhase 1 benoetigte %f Sekunden und somit %f Prozent der Laufzeit.\n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
+		printf("\nPhase 1 benoetigte %.20lf Sekunden und somit %.20lf Prozent der Laufzeit.\n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
 		
-		printf("\nDer Kommunikationsoverhead betrung %f Sekunden und somit %f Prozent der Laufzeit.\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world)*100 );
+		printf("\nDer Kommunikationsoverhead betrung %.20lf Sekunden und somit %.20lf Prozent der Laufzeit.\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world)*100 );
 	}
 	else
 	{
