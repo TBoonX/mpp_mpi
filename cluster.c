@@ -48,7 +48,7 @@ void quicksort(int x[], int first, int last) {
 
 int main(int argc, char* argv[])
 {
-	int debug = 1;
+	int debug = 0;
 	
 	//MPI-Variablen
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
@@ -300,6 +300,14 @@ int main(int argc, char* argv[])
 	{
 		MPI_Gather(local, nLocal, MPI_INT, &ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
+		printf("\nErgebnis:\n");
+		
+		for (i = 0; i < n; i++)
+		{
+			printf("%d,",ergebnis[i]);
+		}
+		printf("\n\n");
+		
 		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 		
 		printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
@@ -315,6 +323,8 @@ int main(int argc, char* argv[])
 		//anderen Prozesse versenden
 		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 	}
+
+	MPI_Barrier(MPI_COMM_WORLD);
 
 	MPI_Finalize();
 	return 0;
