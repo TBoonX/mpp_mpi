@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
 	//----------------------
 	//T(1)
 	
-	printf("\nP %d: Bestimmung von T(1)...\n", rank_world);
+	printf("\nP %d: Bestimmung von T(1)...", rank_world);
 		
 	//Array füllen
 	for (i=0;i<n;i++) {
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
 	quicksort(singlecore, 0, n-1);
 	singlecoretimes[1] = MPI_Wtime();
 	
-	//printf("P %d:    -> T(1) = %f \n\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
+	printf("\nP %d: T(1) = %.20lf\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
 	
 	//-----------------------
 	
@@ -256,8 +256,6 @@ int main(int argc, char* argv[])
 	
 	//Jeder Prozess errechnet die zu betrachtenden Zeiten und Werte
 	
-	if(debug) printf("\nP %d: T(1) = %.20lf\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
-	
 	//Gesamtzeit
 	overalltime = (wtimesoverall[1]-wtimesoverall[0])+(wtimesphase1[1]-wtimesphase1[0]);
 	if(debug) printf("\nP %d: overalltime=%.20lf\n", rank_world, overalltime);
@@ -299,14 +297,6 @@ int main(int argc, char* argv[])
 	if (rank_world == 0)
 	{
 		MPI_Gather(local, nLocal, MPI_INT, &ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
-		
-		printf("\nErgebnis:\n");
-		
-		for (i = 0; i < n; i++)
-		{
-			printf("%d,",ergebnis[i]);
-		}
-		printf("\n\n");
 		
 		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 		
