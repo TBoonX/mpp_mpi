@@ -153,6 +153,8 @@ int main(int argc, char* argv[])
 	if (rank_world == 0)
 		printf("Jeder Prozess erzeugt sein eigenes Array.\nDas Sortierverfahren wird nun gestartet.\n");
 		
+	MPI_Barrier(MPI_COMM_WORLD);
+		
 	//Vorstufe
 	if(debug) printf("P %d: Start Vorstufe\n", rank_world);
 	
