@@ -292,6 +292,9 @@ int main(int argc, char* argv[])
 	MPI_Reduce(&comtime, &comtime_p, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 	
 	
+	MPI_Barrier(MPI_COMM_WORLD);
+	
+	
 	//--------------------------------
 	//Prozess 0 sammelt alle sortierten Zahlen-Arrays ein und gibt die Ergebnisse aus
 	if (rank_world == 0)
