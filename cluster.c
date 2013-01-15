@@ -161,10 +161,10 @@ int main(int argc, char* argv[])
 	quicksort(singlecore, 0, n-1);
 	singlecoretimes[1] = MPI_Wtime();
 
-	int  sorted = issorted(singlecore, n);
+	//int  sorted = issorted(singlecore, n);
 
 	
-	printf("\nP %d: T(1) = %.20lf\n-> issorted: %d\n\n", rank_world, singlecoretimes[1]-singlecoretimes[0], sorted);
+	printf("\nP %d: T(1) = %.20lf\n\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
 
 	
 	//-----------------------
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
 	
 	if(debug) printf("P %d: Ende Vorstufe\n   Start ungerader Schritt\n", rank_world);
 	
-	wtimesoverall[0] = MPI_Wtime(); // vor die Vorstufe!
+	wtimesoverall[0] = wtimesphase1[1]; // vor die Vorstufe!
 	
 	//Wiederhole Runden p_world mal
 	for (j = 0; j < p_world; j++)
@@ -329,7 +329,7 @@ int main(int argc, char* argv[])
 		
 		printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
 		
-		printf("\n!!!! end-start: %.20fl\n\n", end-start);
+		//printf("\n!!!! end-start: %.20fl\n\n", end-start);
 
 		printf("\nSpeedup: S(p):\n -> %.20lf\n", speedup_p/p_world );
 		
