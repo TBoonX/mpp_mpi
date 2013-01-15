@@ -5,15 +5,17 @@
 
 /*
  * Vorgehensweise:
- * Zunächst wird ein Array von einem Prozess erzeugt und sortiet, um den Speedup bestimmen zu können.
+ * Zunächst wird ein Array von jedem Prozess erzeugt und sortiet, wodurch T(1) gemittelt werden kann.
  * Jeder Cluster erzeugt n/p Zufallszahlen und speichert sie in einem Array ab.
- * Kommunikation zwischen Slaves findet mit MPI_Send/Recv statt. Besser:  MPI_Bsend
+ * Kommunikation zwischen Slaves findet mit MPI_Send/Recv statt.
+ * Nach dem verteilten Sortiervorgang ermitelt jeder Prozess Messwerte (Speedup, Kommunikationsoverhead,...).
  * Am Ende sammelt Master mit MPI-Gather alle Arrays ein.
  * Zeiterfassung erfolgt mit MPI_Wtime.
  * Jeder Prozess erhebt die zu messenden Daten zu seinen erfassten Zeiten und teilt sie dem Master mit MPI_Reduce() mit.
 */
 
 // siehe http://en.wikibooks.org/wiki/Algorithm_implementation/Sorting/Quicksort#C
+//Hilfsfunktion
 int partition(int y[], int f, int l) {
      int up,down,temp;
      int piv = y[f];
@@ -42,6 +44,8 @@ int cmp_integer(const void *wert1, const void *wert2) {
    return (*(int*)wert1 - *(int*)wert2);
 }
 
+//Quicksort von Wikibooks
+//veraendert -> ruft stabile Sortierfunktion qsort auf
 void quicksort(int x[], int first, int last) {
      /*int pivIndex = 0;
      if(first < last) {
@@ -52,6 +56,7 @@ void quicksort(int x[], int first, int last) {
      qsort(x, last+1, sizeof(int), cmp_integer);
 }
 
+//Testet Array auf korrekte Reihenfolge
 int issorted(int numbers[], int length)
 {
 	int k, number = 0;
@@ -65,6 +70,7 @@ int issorted(int numbers[], int length)
 	return 1;
 }
 
+
 int main(int argc, char* argv[])
 {
 	int debug = 0;
@@ -74,20 +80,17 @@ int main(int argc, char* argv[])
 	int p_world;			// Anzahl Prozesse in MPI_COMM_WORLD
 	MPI_Status *status;		//Status für MPI_Recv
 	
-	// Variablen für Merge-Splitting-Sort
+	// Variablen zur allgemeinen Verwendung
 	int n;					//Anzahl der zu sortierenden Elemente
 	int nLocal;				//...pro Prozessor
 	int i, j;				//Zaehler
 	
-	printf("\n");
-	
 	//Initialisierung der MPI Umgebung
-	MPI_Init(&argc, &argv);	//Error: Argumente koennen nicht korrekt durchgereicht werden
-//	MPI_Init(0, 0);
+	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank_world);
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
 	
-	//Festlegen von n
+	//Festlegen von n: Parameter oder manuelle Eingabe
 	if (rank_world == 0)
 	{
 		if(argc == 2) {	// wenn n als Startparameter uebergeben wurde
@@ -98,7 +101,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	
-	//n an alle Prozesse verteilen
+	//n allen Prozesse mitteilen
 	MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	
 	//Anzahl der zu sortierenden Elemente pro Prozessor
@@ -130,7 +133,6 @@ int main(int argc, char* argv[])
 	double speedup, speedup_p;		//Speedup
 	double phase1, phase1_p;		//Zeit fuer Phase 1
 	double comtime = 0, comtime_p;		//           Zeit zur Kommunikation - Kommunikationsoverhead
-	double start = 0, end = 0;
 
 	//Status muss allokiert werden
 	status = malloc(sizeof(MPI_Status));
@@ -160,12 +162,8 @@ int main(int argc, char* argv[])
 	singlecoretimes[0] = MPI_Wtime();
 	quicksort(singlecore, 0, n-1);
 	singlecoretimes[1] = MPI_Wtime();
-
-	//int  sorted = issorted(singlecore, n);
-
 	
 	printf("\nP %d: T(1) = %.20lf\n\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
-
 	
 	//-----------------------
 	
@@ -182,13 +180,13 @@ int main(int argc, char* argv[])
 	//Vorstufe
 	if(debug) printf("P %d: Start Vorstufe\n", rank_world);
 	
-	start = wtimesphase1[0] = MPI_Wtime();
+	wtimesphase1[0] = MPI_Wtime();
 	quicksort(local, 0, nLocal-1);
 	wtimesphase1[1] = MPI_Wtime();
 	
 	if(debug) printf("P %d: Ende Vorstufe\n   Start ungerader Schritt\n", rank_world);
 	
-	wtimesoverall[0] = wtimesphase1[1]; // vor die Vorstufe!
+	wtimesoverall[0] = wtimesphase1[1];
 	
 	//Wiederhole Runden p_world mal
 	for (j = 0; j < p_world; j++)
@@ -256,7 +254,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	
-	end = wtimesoverall[1] = MPI_Wtime();
+	wtimesoverall[1] = MPI_Wtime();
 	
 	//Arrays sind sortiert
 	//----------------------------
@@ -328,8 +326,6 @@ int main(int argc, char* argv[])
 		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 		
 		printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
-		
-		//printf("\n!!!! end-start: %.20fl\n\n", end-start);
 
 		printf("\nSpeedup: S(p):\n -> %.20lf\n", speedup_p/p_world );
 		
