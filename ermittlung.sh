@@ -61,3 +61,7 @@ echo "" >> daten.txt
 echo "n= 80000" >> daten.txt
 ./run.sh -c 10 -i cluster.c -o cluster -v 80000  | grep "\->" >> daten.txt
 echo "" >> daten.txt
+
+echo "n= 39000" >> daten.txt
+./run.sh -c 4 -i cluster.c -o cluster -v 39000  | grep "\->" >> daten.txt
+echo "" >> daten.txt
