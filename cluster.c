@@ -46,6 +46,19 @@ void quicksort(int x[], int first, int last) {
      }
  }
 
+int issorted(int numbers[], int length)
+{
+	int k, number = 0;
+
+	for (k = 0; k < length; k++)
+	{
+		if (numbers[k] < number)
+			return 0;
+		number = numbers[k];
+	}
+	return 1;
+}
+
 int main(int argc, char* argv[])
 {
 	int debug = 0;
@@ -63,8 +76,8 @@ int main(int argc, char* argv[])
 	printf("\n");
 	
 	//Initialisierung der MPI Umgebung
-//	MPI_Init(&argc, &argv);	//Error: Argumente koennen nicht korrekt durchgereicht werden
-	MPI_Init(0, 0);
+	MPI_Init(&argc, &argv);	//Error: Argumente koennen nicht korrekt durchgereicht werden
+//	MPI_Init(0, 0);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank_world);
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
 	
@@ -102,7 +115,7 @@ int main(int argc, char* argv[])
 	//Deklarieren der Arrays
 	int local[2 * nLocal];			//lokales Array doppelter Größe
 	double wtimesinnersort[p_world*2];	//2 Zeitmessungen für sortiervorgang in (un)geraden Schritt
-	double wtimesphase1[2];		//Zeiten zu Messung der Vorstufe
+	double wtimesphase1[2];			//Zeiten zu Messung der Vorstufe
 	double wtimesoverall[2];		//Zeiten zur Bestimmung der gesamten Laufzeit
 	int ergebnis[p_world*nLocal];		//sortiertes Array
 	int singlecore[n];			//von einem Prozess zu sortierendes Array
@@ -111,6 +124,7 @@ int main(int argc, char* argv[])
 	double speedup, speedup_p;		//Speedup
 	double phase1, phase1_p;		//Zeit fuer Phase 1
 	double comtime = 0, comtime_p;		//           Zeit zur Kommunikation - Kommunikationsoverhead
+	double start = 0, end = 0;
 
 	//Status muss allokiert werden
 	status = malloc(sizeof(MPI_Status));
@@ -140,8 +154,12 @@ int main(int argc, char* argv[])
 	singlecoretimes[0] = MPI_Wtime();
 	quicksort(singlecore, 0, n-1);
 	singlecoretimes[1] = MPI_Wtime();
+
+	int  sorted = issorted(singlecore, n);
+
 	
-	printf("\nP %d: T(1) = %.20lf\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
+	printf("\nP %d: T(1) = %.20lf\n-> issorted: %d\n\n", rank_world, singlecoretimes[1]-singlecoretimes[0], sorted);
+
 	
 	//-----------------------
 	
@@ -158,13 +176,13 @@ int main(int argc, char* argv[])
 	//Vorstufe
 	if(debug) printf("P %d: Start Vorstufe\n", rank_world);
 	
-	wtimesphase1[0] = MPI_Wtime();
+	start = wtimesphase1[0] = MPI_Wtime();
 	quicksort(local, 0, nLocal-1);
 	wtimesphase1[1] = MPI_Wtime();
 	
 	if(debug) printf("P %d: Ende Vorstufe\n   Start ungerader Schritt\n", rank_world);
 	
-	wtimesoverall[0] = MPI_Wtime();
+	wtimesoverall[0] = MPI_Wtime(); // vor die Vorstufe!
 	
 	//Wiederhole Runden p_world mal
 	for (j = 0; j < p_world; j++)
@@ -232,7 +250,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	
-	wtimesoverall[1] = MPI_Wtime();
+	end = wtimesoverall[1] = MPI_Wtime();
 	
 	//Arrays sind sortiert
 	//----------------------------
@@ -305,6 +323,8 @@ int main(int argc, char* argv[])
 		
 		printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
 		
+		printf("\n!!!! end-start: %.20fl\n\n", end-start);
+
 		printf("\nSpeedup: S(p):\n -> %.20lf\n", speedup_p/p_world );
 		
 		printf("\nPhase 1 benoetigte in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf \n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
