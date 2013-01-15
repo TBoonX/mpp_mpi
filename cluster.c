@@ -37,14 +37,20 @@ int partition(int y[], int f, int l) {
      return down;
 }
 
+/* Vergleichsfunktion für qsort() */
+int cmp_integer(const void *wert1, const void *wert2) {
+   return (*(int*)wert1 - *(int*)wert2);
+}
+
 void quicksort(int x[], int first, int last) {
-     int pivIndex = 0;
+     /*int pivIndex = 0;
      if(first < last) {
          pivIndex = partition(x,first, last);
          quicksort(x,first,(pivIndex-1));
          quicksort(x,(pivIndex+1),last);
-     }
- }
+     }*/
+     qsort(x, last+1, sizeof(int), cmp_integer);
+}
 
 int issorted(int numbers[], int length)
 {
