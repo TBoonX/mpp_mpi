@@ -59,7 +59,7 @@ do
         if [ $? = 0 ] 
             then
 		## Prueft zum einen Erreichbarkeit des SSH-Dienstes und ermittelt mit cat /proc/loadavg auch noch die Auslastung jedes Nodes und grept noch nicht erreichbare Hosts aus dem Ergebnis mittels Regex
-                echo "`ping -c 1 simson${i} | grep "64 bytes" | awk ' BEGIN {FS="("} {print $2}' | awk ' BEGIN {FS=")"} {print $1}'` `ssh mkirbst@simson${i} cat /proc/loadavg`" | grep -v -E '141.57.9.[0-9]{2} $' >> $HOSTLISTFILENAME
+                echo "`ping -c 1 simson${i} | grep "64 bytes" | awk ' BEGIN {FS="("} {print $2}' | awk ' BEGIN {FS=")"} {print $1}'` `ssh simson${i} cat /proc/loadavg`" | grep -v -E '141.57.9.[0-9]{2} $' >> $HOSTLISTFILENAME
         fi
 done
 HOSTNR=`wc -l $HOSTLISTFILENAME | awk '{print $1}'`		## zaehle Anzahl erreichbarer Hosts 
