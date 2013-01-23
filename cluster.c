@@ -359,6 +359,10 @@ int main(int argc, char* argv[])
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
+	//Freigeben der Arrays
+	free(ergebnis);
+	free(singlecore);
+	free(local);
 	free(status);
 	
 	MPI_Finalize();
