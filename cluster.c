@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
 
 	MPI_Barrier(MPI_COMM_WORLD);
-        if (rank_world == 0)    printf("\n-|| MPI Merge-Splitting-Sort ||-\n\n");
+        if (rank_world == 0 && debug)    printf("\n-|| MPI Merge-Splitting-Sort ||-\n\n");
 
 	//Festlegen von n: Parameter oder manuelle Eingabe
 	if (rank_world == 0)
@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 		return 0;	
 	}
 	
-	printf("\n%d : Variablendeklarationen\n", rank_world);
+	if(debug) printf("\n%d : Variablendeklarationen\n", rank_world);
 
 	// Variablen für Merge-Splitting-Sort
 	//Deklarieren der Arrays
@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
 	double phase1, phase1_p;		//Zeit fuer Phase 1
 	double comtime = 0, comtime_p;		//           Zeit zur Kommunikation - Kommunikationsoverhead
 
-	printf("\Ende Deklarationen\n");
+	if(debug) printf("\Ende Deklarationen\n");
 
 	//Allokieren der Array
 //	local = malloc((int*)sizeof(int)*2*nLocal);
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 	//rand initialisieren
 	srand((unsigned)time(NULL));
 	
-	if (rank_world == 0)
+	if (rank_world == 0 && debug)
 	{
 		printf("\nNachfolgend wird ein Array der Groesse %d mit Zufallszahlen nach dem Merge-Splitting Verfahren sortiert.\n", n);
 		printf(" -> %d Cluster\n\n", p_world);
@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
 	//----------------------
 	//T(1)
 	
-	printf("\nP %d: Bestimmung von T(1)...", rank_world);
+	if(debug) printf("\nP %d: Bestimmung von T(1)...", rank_world);
 		
 	//Array füllen
 	for (i=0;i<n;i++) {
@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
 	quicksort(singlecore, 0, n-1);
 	singlecoretimes[1] = MPI_Wtime();
 	
-	printf("\nP %d: T(1) = %.20lf\n\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
+	if (debug) printf("\nP %d: T(1) = %.20lf\n\n", rank_world, singlecoretimes[1]-singlecoretimes[0]);
 	
 	//-----------------------
 	
@@ -190,7 +190,7 @@ int main(int argc, char* argv[])
 	}
 	
 	if (rank_world == 0)
-		printf("Jeder Prozess erzeugt sein eigenes Array.\nDas Sortierverfahren wird nun gestartet.\n");
+		if(debug) printf("Jeder Prozess erzeugt sein eigenes Array.\nDas Sortierverfahren wird nun gestartet.\n");
 		
 	MPI_Barrier(MPI_COMM_WORLD);
 		
@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
 	//Arrays sind sortiert
 	//----------------------------
 	
-	printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
+	if(debug) printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
 	
 	
 	if (debug)
@@ -330,7 +330,7 @@ int main(int argc, char* argv[])
 	//Zeit der Kommunikation
 	MPI_Reduce(&comtime, &comtime_p, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 	
-	if (rank_world == 0) printf("\n%d : Alle Werte erhalten\n", rank_world);
+	if(debug) if (rank_world == 0) printf("\n%d : Alle Werte erhalten\n", rank_world);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	
