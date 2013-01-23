@@ -89,7 +89,10 @@ int main(int argc, char* argv[])
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank_world);
 	MPI_Comm_size(MPI_COMM_WORLD, &p_world);
-	
+
+	MPI_Barrier(MPI_COMM_WORLD);
+        if (rank_world == 0)    printf("\n-|| MPI Merge-Splitting-Sort ||-\n\n");
+
 	//Festlegen von n: Parameter oder manuelle Eingabe
 	if (rank_world == 0)
 	{
@@ -120,22 +123,42 @@ int main(int argc, char* argv[])
 		return 0;	
 	}
 	
+	printf("\n%d : Variablendeklarationen\n", rank_world);
+
 	// Variablen für Merge-Splitting-Sort
 	//Deklarieren der Arrays
-	int local[2 * nLocal];			//lokales Array doppelter Größe
+	int local[2 * nLocal+1];		//lokales Array doppelter Größe
+	printf("\n%d : local definiert\n", rank_world);
 	double wtimesinnersort[p_world*2];	//2 Zeitmessungen für sortiervorgang in (un)geraden Schritt
+	printf("\n%d : wtimeinnsersort definiert\n", rank_world);
 	double wtimesphase1[2];			//Zeiten zu Messung der Vorstufe
+	printf("\n%d : wtimesphase1 definiert\n", rank_world);
 	double wtimesoverall[2];		//Zeiten zur Bestimmung der gesamten Laufzeit
-	int ergebnis[p_world*nLocal];		//sortiertes Array
-	int singlecore[n];			//von einem Prozess zu sortierendes Array
+	printf("\n%d : wtimesoverall definiert\n", rank_world);
+	int *ergebnis;			//sortiertes Array
+	printf("\n%d : ergebnis definiert\n", rank_world);
+	int *singlecore;			//von einem Prozess zu sortierendes Array
+	printf("\n%d : singlecore definiert\n", rank_world);
 	double singlecoretimes[2];		//  Zeit
+	printf("\n%d : singlecoretimes definiert\n", rank_world);
 	double overalltime, overalltime_p;	//Gesamtzeit
 	double speedup, speedup_p;		//Speedup
 	double phase1, phase1_p;		//Zeit fuer Phase 1
 	double comtime = 0, comtime_p;		//           Zeit zur Kommunikation - Kommunikationsoverhead
 
+	printf("\Ende Deklarationen\n");
+
+	//Allokieren der Array
+//	local = malloc((int*)sizeof(int)*2*nLocal);
+//	singlecore = malloc((int*)sizeof(int)*n);
+	
+
 	//Status muss allokiert werden
 	status = malloc(sizeof(MPI_Status));
+
+	//Allokieren der Hauptarray
+	ergebnis = malloc(sizeof(int)*n);
+	singlecore = malloc(sizeof(int)*n);
 	
 	//rand initialisieren
 	srand((unsigned)time(NULL));
@@ -188,8 +211,8 @@ int main(int argc, char* argv[])
 	
 	wtimesoverall[0] = wtimesphase1[1];
 	
-	//Wiederhole Runden p_world mal
-	for (j = 0; j < p_world; j++)
+	//Wiederhole Runden p_world/2 mal
+	for (j = 0; j < p_world/2; j++)
 	{
 		//ungerader Schritt
 		if ((rank_world+1) % 2 == 0)
@@ -313,7 +336,8 @@ int main(int argc, char* argv[])
 	//Zeit der Kommunikation
 	MPI_Reduce(&comtime, &comtime_p, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 	
-	
+	if (rank_world == 0) printf("\n%d : Alle Werte erhalten\n", rank_world);
+
 	MPI_Barrier(MPI_COMM_WORLD);
 	
 	
@@ -321,7 +345,7 @@ int main(int argc, char* argv[])
 	//Prozess 0 sammelt alle sortierten Zahlen-Arrays ein und gibt die Ergebnisse aus
 	if (rank_world == 0)
 	{
-		MPI_Gather(local, nLocal, MPI_INT, &ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
 		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 		
@@ -341,6 +365,8 @@ int main(int argc, char* argv[])
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
+	free(status);
+	
 	MPI_Finalize();
 	return 0;
 }
