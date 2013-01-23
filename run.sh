@@ -79,3 +79,7 @@ awk '{print "Node: " $1 " - Load on this Node:   " $2 " (avg last min)   " $3 " 
 ##3## run program on this hosts
 echo "STAGE 3 - run $OUTPUTFILENAME on $CPUCOUNT cpus "
 mpirun -np $CPUCOUNT -hostfile $HOSTLISTFILENAME $OUTPUTFILENAME $VRANGE
+
+##cleanup - remove temporary used files
+rm $HOSTLISTFILENAME
+rm $HOSTLISTFILENAME.sorted
