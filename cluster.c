@@ -127,20 +127,13 @@ int main(int argc, char* argv[])
 
 	// Variablen für Merge-Splitting-Sort
 	//Deklarieren der Arrays
-	int local[2 * nLocal+1];		//lokales Array doppelter Größe
-	printf("\n%d : local definiert\n", rank_world);
+	int *local;		//lokales Array doppelter Größe
 	double wtimesinnersort[p_world*2];	//2 Zeitmessungen für sortiervorgang in (un)geraden Schritt
-	printf("\n%d : wtimeinnsersort definiert\n", rank_world);
 	double wtimesphase1[2];			//Zeiten zu Messung der Vorstufe
-	printf("\n%d : wtimesphase1 definiert\n", rank_world);
 	double wtimesoverall[2];		//Zeiten zur Bestimmung der gesamten Laufzeit
-	printf("\n%d : wtimesoverall definiert\n", rank_world);
 	int *ergebnis;			//sortiertes Array
-	printf("\n%d : ergebnis definiert\n", rank_world);
 	int *singlecore;			//von einem Prozess zu sortierendes Array
-	printf("\n%d : singlecore definiert\n", rank_world);
 	double singlecoretimes[2];		//  Zeit
-	printf("\n%d : singlecoretimes definiert\n", rank_world);
 	double overalltime, overalltime_p;	//Gesamtzeit
 	double speedup, speedup_p;		//Speedup
 	double phase1, phase1_p;		//Zeit fuer Phase 1
@@ -156,9 +149,10 @@ int main(int argc, char* argv[])
 	//Status muss allokiert werden
 	status = malloc(sizeof(MPI_Status));
 
-	//Allokieren der Hauptarray
+	//Allokieren der Array
 	ergebnis = malloc(sizeof(int)*n);
 	singlecore = malloc(sizeof(int)*n);
+	local = malloc(sizeof(int)*2*nLocal);
 	
 	//rand initialisieren
 	srand((unsigned)time(NULL));
