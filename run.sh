@@ -76,6 +76,8 @@ echo "Zur Ausfuehrung werde folgenden ${CPUCOUNT} Hosts benutzt, da diese derzei
 head -n ${CPUCOUNT} ${HOSTLISTFILENAME}.sorted > head.list
 awk '{print "Node: " $1 " - Load on this Node:   " $2 " (avg last min)   " $3 " (avg last 5 min)   " $4 " (avg last 15 min) "}' head.list
 
+sleep 1
+
 ##3## run program on this hosts
 echo "STAGE 3 - run $OUTPUTFILENAME on $CPUCOUNT cpus "
 mpirun -np $CPUCOUNT -hostfile $HOSTLISTFILENAME $OUTPUTFILENAME $VRANGE
