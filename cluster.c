@@ -341,15 +341,16 @@ int main(int argc, char* argv[])
 	{
 		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
-		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
+		if(debug) printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 		
-		printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
+		if(debug) printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
 
-		printf("\nSpeedup: S(p):\n -> %.20lf\n", speedup_p/p_world );
+		if(debug) printf("\nSpeedup: S(p): -> %.20lf\n", speedup_p/p_world );
+		printf("\nSpeedup fuer %d Elemente auf %d Prozessoren - SpeedUp: %.3lf -Effizienz: %.3lf",n ,p_world , speedup_p/p_world, (speedup_p/p_world)/p_world);
 		
-		printf("\nPhase 1 benoetigte in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf \n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
+		if(debug) printf("\nPhase 1 benoetigte in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf \n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
 		
-		printf("\nDer Kommunikationsoverhead betrung in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world)*100 );
+		if(debug) printf("\nDer Kommunikationsoverhead betrung in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world)*100 );
 	}
 	else
 	{

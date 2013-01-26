@@ -83,5 +83,5 @@ echo "STAGE 3 - run $OUTPUTFILENAME on $CPUCOUNT cpus "
 mpirun -np $CPUCOUNT -hostfile $HOSTLISTFILENAME $OUTPUTFILENAME $VRANGE
 
 ##cleanup - remove temporary used files
-rm $HOSTLISTFILENAME
-rm $HOSTLISTFILENAME.sorted
+#rm $HOSTLISTFILENAME
+#rm $HOSTLISTFILENAME.sorted
