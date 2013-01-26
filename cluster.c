@@ -14,6 +14,11 @@
  * Jeder Prozess erhebt die zu messenden Daten zu seinen erfassten Zeiten und teilt sie dem Master mit MPI_Reduce() mit.
 */
 
+/* Vergleichsfunktion für qsort() */
+int cmp_integer(const void *wert1, const void *wert2) {
+   return (*(int*)wert1 - *(int*)wert2);
+}
+
 //ruft stabile Sortierfunktion qsort auf
 void quicksort(int x[], int first, int last) {
      qsort(x, last+1, sizeof(int), cmp_integer);
