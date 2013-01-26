@@ -14,60 +14,9 @@
  * Jeder Prozess erhebt die zu messenden Daten zu seinen erfassten Zeiten und teilt sie dem Master mit MPI_Reduce() mit.
 */
 
-// siehe http://en.wikibooks.org/wiki/Algorithm_implementation/Sorting/Quicksort#C
-//Hilfsfunktion
-int partition(int y[], int f, int l) {
-     int up,down,temp;
-     int piv = y[f];
-     up = f;
-     down = l;
-     goto partLS;
-     do { 
-         temp = y[up];
-         y[up] = y[down];
-         y[down] = temp;
-     partLS:
-         while (y[up] <= piv && up < l) {
-             up++;
-         }
-         while (y[down] > piv  && down > f ) {
-             down--;
-         }
-     } while (down > up);
-     y[f] = y[down];
-     y[down] = piv;
-     return down;
-}
-
-/* Vergleichsfunktion für qsort() */
-int cmp_integer(const void *wert1, const void *wert2) {
-   return (*(int*)wert1 - *(int*)wert2);
-}
-
-//Quicksort von Wikibooks
-//veraendert -> ruft stabile Sortierfunktion qsort auf
+//ruft stabile Sortierfunktion qsort auf
 void quicksort(int x[], int first, int last) {
-     /*int pivIndex = 0;
-     if(first < last) {
-         pivIndex = partition(x,first, last);
-         quicksort(x,first,(pivIndex-1));
-         quicksort(x,(pivIndex+1),last);
-     }*/
      qsort(x, last+1, sizeof(int), cmp_integer);
-}
-
-//Testet Array auf korrekte Reihenfolge
-int issorted(int numbers[], int length)
-{
-	int k, number = 0;
-
-	for (k = 0; k < length; k++)
-	{
-		if (numbers[k] < number)
-			return 0;
-		number = numbers[k];
-	}
-	return 1;
 }
 
 
@@ -97,7 +46,7 @@ int main(int argc, char* argv[])
 	//Festlegen von n: Parameter oder manuelle Eingabe
 	if (rank_world == 0)
 	{
-		if(argc == 2) {	// wenn n als Startparameter uebergeben wurde
+		if(argc > 1) {	// wenn n als Startparameter uebergeben wurde
 			n = atoi(argv[1]);
 		} else {	// sonst von Benutzer erfragen
 			printf("Gib n ein:\n");
@@ -146,15 +95,10 @@ int main(int argc, char* argv[])
 
 	if(debug) printf("\Ende Deklarationen\n");
 
-	//Allokieren der Array
-//	local = malloc((int*)sizeof(int)*2*nLocal);
-//	singlecore = malloc((int*)sizeof(int)*n);
-	
-
 	//Status muss allokiert werden
 	status = malloc(sizeof(MPI_Status));
 
-	//Allokieren der Array
+	//Allokieren der Arrays
 	ergebnis = malloc(sizeof(int)*n);
 	singlecore = malloc(sizeof(int)*n);
 	local = malloc(sizeof(int)*2*nLocal);
@@ -283,18 +227,6 @@ int main(int argc, char* argv[])
 	
 	if(debug) printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
 	
-	
-	if (debug)
-	{
-		//Ausgabe von wtimes
-		printf("\nP%d:  wtimes:\n", rank_world);
-		for (i = 0; i < p_world*2; i++)
-		{
-			printf("P%d: wtimesinnersort[%d]=%f\n", rank_world, i, wtimesinnersort[i]);
-		}
-		printf("\n");
-	}
-	
 	//----------------------------
 	
 	
@@ -376,7 +308,7 @@ int main(int argc, char* argv[])
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	//Freigeben der Arrays
+	//Freigeben der Arrays/Zeiger
 	free(ergebnis);
 	free(singlecore);
 	free(local);
