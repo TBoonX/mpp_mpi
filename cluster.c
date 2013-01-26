@@ -74,6 +74,7 @@ int issorted(int numbers[], int length)
 int main(int argc, char* argv[])
 {
 	int debug = 0;
+	int arrayausgabe = 0;
 	
 	//MPI-Variablen
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
@@ -122,6 +123,10 @@ int main(int argc, char* argv[])
 		MPI_Finalize();
 		return 0;	
 	}
+	
+	//auf Parameter fuer Ausgabe des sortierten Arrays pruefen
+	if (argc > 2)
+		arrayausgabe = 1;
 	
 	if(debug) printf("\n%d : Variablendeklarationen\n", rank_world);
 
@@ -341,11 +346,23 @@ int main(int argc, char* argv[])
 	{
 		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
+		if (arrayausgabe)
+		{
+			printf("\n\nSortiertes Array:\n");
+			for (i = 0; i < n; i++)
+			{
+				printf("%d, ", ergebnis[i])
+			}
+			printf("\n");
+		}
+		
 		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 		
 		printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
 
 		printf("\nSpeedup: S(p):\n -> %.20lf\n", speedup_p/p_world );
+
+		printf("\nEffizienz: E(p):\n -> %.20lf\n", (speedup_p/p_world)/p_world );
 		
 		printf("\nPhase 1 benoetigte in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf \n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
 		
