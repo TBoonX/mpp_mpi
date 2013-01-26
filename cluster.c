@@ -14,66 +14,21 @@
  * Jeder Prozess erhebt die zu messenden Daten zu seinen erfassten Zeiten und teilt sie dem Master mit MPI_Reduce() mit.
 */
 
-// siehe http://en.wikibooks.org/wiki/Algorithm_implementation/Sorting/Quicksort#C
-//Hilfsfunktion
-int partition(int y[], int f, int l) {
-     int up,down,temp;
-     int piv = y[f];
-     up = f;
-     down = l;
-     goto partLS;
-     do { 
-         temp = y[up];
-         y[up] = y[down];
-         y[down] = temp;
-     partLS:
-         while (y[up] <= piv && up < l) {
-             up++;
-         }
-         while (y[down] > piv  && down > f ) {
-             down--;
-         }
-     } while (down > up);
-     y[f] = y[down];
-     y[down] = piv;
-     return down;
-}
-
 /* Vergleichsfunktion für qsort() */
 int cmp_integer(const void *wert1, const void *wert2) {
    return (*(int*)wert1 - *(int*)wert2);
 }
 
-//Quicksort von Wikibooks
-//veraendert -> ruft stabile Sortierfunktion qsort auf
+//ruft stabile Sortierfunktion qsort auf
 void quicksort(int x[], int first, int last) {
-     /*int pivIndex = 0;
-     if(first < last) {
-         pivIndex = partition(x,first, last);
-         quicksort(x,first,(pivIndex-1));
-         quicksort(x,(pivIndex+1),last);
-     }*/
      qsort(x, last+1, sizeof(int), cmp_integer);
-}
-
-//Testet Array auf korrekte Reihenfolge
-int issorted(int numbers[], int length)
-{
-	int k, number = 0;
-
-	for (k = 0; k < length; k++)
-	{
-		if (numbers[k] < number)
-			return 0;
-		number = numbers[k];
-	}
-	return 1;
 }
 
 
 int main(int argc, char* argv[])
 {
 	int debug = 0;
+	int arrayausgabe = 0;
 	
 	//MPI-Variablen
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
@@ -96,7 +51,7 @@ int main(int argc, char* argv[])
 	//Festlegen von n: Parameter oder manuelle Eingabe
 	if (rank_world == 0)
 	{
-		if(argc == 2) {	// wenn n als Startparameter uebergeben wurde
+		if(argc > 1) {	// wenn n als Startparameter uebergeben wurde
 			n = atoi(argv[1]);
 		} else {	// sonst von Benutzer erfragen
 			printf("Gib n ein:\n");
@@ -123,6 +78,10 @@ int main(int argc, char* argv[])
 		return 0;	
 	}
 	
+	//auf Parameter fuer Ausgabe des sortierten Arrays pruefen
+	if (argc > 2)
+		arrayausgabe = 1;
+	
 	if(debug) printf("\n%d : Variablendeklarationen\n", rank_world);
 
 	// Variablen für Merge-Splitting-Sort
@@ -141,15 +100,10 @@ int main(int argc, char* argv[])
 
 	if(debug) printf("\Ende Deklarationen\n");
 
-	//Allokieren der Array
-//	local = malloc((int*)sizeof(int)*2*nLocal);
-//	singlecore = malloc((int*)sizeof(int)*n);
-	
-
 	//Status muss allokiert werden
 	status = malloc(sizeof(MPI_Status));
 
-	//Allokieren der Array
+	//Allokieren der Arrays
 	ergebnis = malloc(sizeof(int)*n);
 	singlecore = malloc(sizeof(int)*n);
 	local = malloc(sizeof(int)*2*nLocal);
@@ -278,18 +232,6 @@ int main(int argc, char* argv[])
 	
 	if(debug) printf("P %d: ...\nSortierung abgeschlossen!\n\n", rank_world);
 	
-	
-	if (debug)
-	{
-		//Ausgabe von wtimes
-		printf("\nP%d:  wtimes:\n", rank_world);
-		for (i = 0; i < p_world*2; i++)
-		{
-			printf("P%d: wtimesinnersort[%d]=%f\n", rank_world, i, wtimesinnersort[i]);
-		}
-		printf("\n");
-	}
-	
 	//----------------------------
 	
 	
@@ -341,12 +283,32 @@ int main(int argc, char* argv[])
 	{
 		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
+<<<<<<< HEAD
 		if(debug) printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
+=======
+		if (arrayausgabe)
+		{
+			printf("\n\nSortiertes Array:\n");
+			for (i = 0; i < n; i++)
+			{
+				printf("%d, ", ergebnis[i]);
+			}
+			printf("\n");
+		}
+		
+		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
+>>>>>>> ab97f17b4d2577ad9eec5f10568d7d09f87bbd16
 		
 		if(debug) printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
 
+<<<<<<< HEAD
 		if(debug) printf("\nSpeedup: S(p): -> %.20lf\n", speedup_p/p_world );
 		printf("\nSpeedup fuer %d Elemente auf %d Prozessoren - SpeedUp: %.3lf -Effizienz: %.3lf",n ,p_world , speedup_p/p_world, (speedup_p/p_world)/p_world);
+=======
+		printf("\nSpeedup: S(p):\n -> %.20lf\n", speedup_p/p_world );
+
+		printf("\nEffizienz: E(p):\n -> %.20lf\n", (speedup_p/p_world)/p_world );
+>>>>>>> ab97f17b4d2577ad9eec5f10568d7d09f87bbd16
 		
 		if(debug) printf("\nPhase 1 benoetigte in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf \n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
 		
@@ -360,7 +322,7 @@ int main(int argc, char* argv[])
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	//Freigeben der Arrays
+	//Freigeben der Arrays/Zeiger
 	free(ergebnis);
 	free(singlecore);
 	free(local);
