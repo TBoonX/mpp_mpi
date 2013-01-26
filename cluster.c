@@ -351,7 +351,7 @@ int main(int argc, char* argv[])
 			printf("\n\nSortiertes Array:\n");
 			for (i = 0; i < n; i++)
 			{
-				printf("%d, ", ergebnis[i])
+				printf("%d, ", ergebnis[i]);
 			}
 			printf("\n");
 		}
