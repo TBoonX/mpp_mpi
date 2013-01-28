@@ -27,7 +27,7 @@ void quicksort(int x[], int first, int last) {
 
 int main(int argc, char* argv[])
 {
-	int debug = 0;
+	int debug = 1;
 	int arrayausgabe = 0;
 	
 	//MPI-Variablen
@@ -283,9 +283,9 @@ int main(int argc, char* argv[])
 	{
 		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
-<<<<<<< HEAD
+
 		if(debug) printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
-=======
+
 		if (arrayausgabe)
 		{
 			printf("\n\nSortiertes Array:\n");
@@ -297,18 +297,15 @@ int main(int argc, char* argv[])
 		}
 		
 		printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
->>>>>>> ab97f17b4d2577ad9eec5f10568d7d09f87bbd16
 		
 		if(debug) printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
 
-<<<<<<< HEAD
 		if(debug) printf("\nSpeedup: S(p): -> %.20lf\n", speedup_p/p_world );
 		printf("\nSpeedup fuer %d Elemente auf %d Prozessoren - SpeedUp: %.3lf -Effizienz: %.3lf",n ,p_world , speedup_p/p_world, (speedup_p/p_world)/p_world);
-=======
+		
 		printf("\nSpeedup: S(p):\n -> %.20lf\n", speedup_p/p_world );
 
 		printf("\nEffizienz: E(p):\n -> %.20lf\n", (speedup_p/p_world)/p_world );
->>>>>>> ab97f17b4d2577ad9eec5f10568d7d09f87bbd16
 		
 		if(debug) printf("\nPhase 1 benoetigte in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf \n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
 		
