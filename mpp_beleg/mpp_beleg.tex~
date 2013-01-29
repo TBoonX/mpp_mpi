@@ -246,7 +246,7 @@ Tabellenkalkulationsprogrammen zu gestatten.
 \end{figure}
 Der Speedup ist der Quotient aus der Laufzeit des Algorithmus bei der Nutzung eines Prozessors und der Laufzeit bei Nutzung mehrerer Prozessoren.
 Ein Speedup-Wert von 1 sagt aus, dass der Algorithmus auf einem Prozessor der Laufzeit des Algorithmus auf mehreren Prozessoren entspricht.
-Im Idealfall steigt der Speedup proportional mit der Anzahl der Prozessoren. \\
+Im Idealfall steigt der Speedup proportional mit der Anzahl der Prozessoren. \\\\
 
 Nach Ahmdal setzt sich die Gesamtlaufzeit des parallelisierten Algorithmus zusammen aus einem Anteil mit nichtparallelisierbaren Code (sog.: sequenzieller
 Anteil) und einem Anteil an parallelisierbaren Code, dessen Laufzeit sich umgekehrt proportional zur Anzahl der benutzten Prozessoren verhält.

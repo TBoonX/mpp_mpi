@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2012.12.4)  29 JAN 2013 21:42
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2012.12.4)  29 JAN 2013 21:55
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -995,46 +995,52 @@ Underfull \hbox (badness 10000) in paragraph at lines 256--258
 
  []
 
-[5 <../speedup.png>]
+[5 <../speedup.png>] <../effizienz.png, id=144, 839.38594pt x 478.03593pt>
+File: ../effizienz.png Graphic file (type png)
+
+<use ../effizienz.png>
+Package pdftex.def Info: ../effizienz.png used on input line 274.
+(pdftex.def)             Requested size: 426.79135pt x 243.05838pt.
+
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2004/09/05 1.3 listings language file
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2004/09/05 1.3 listings language file
-) [6]
-LaTeX Font Info:    Try loading font information for TS1+fvm on input line 365.
+) [6 <../effizienz.png>] [7]
+LaTeX Font Info:    Try loading font information for TS1+fvm on input line 373.
 
-
-(/usr/share/texlive/texmf-dist/tex/latex/bera/ts1fvm.fd
+ (/usr/share/texlive/texmf-dist/tex/latex/bera/ts1fvm.fd
 File: ts1fvm.fd 2004/09/07 scalable font definitions for TS1/fvm.
 )
 LaTeX Font Info:    Font shape `TS1/fvm/m/n' will be
-(Font)              scaled to size 7.19995pt on input line 365.
- [7] [8]
+(Font)              scaled to size 7.19995pt on input line 373.
+ [8]
+[9]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 445.
- [9
+(Font)              <7> on input line 453.
+ [10
 
 ]
-Underfull \hbox (badness 2237) in paragraph at lines 477--478
+Underfull \hbox (badness 2237) in paragraph at lines 485--486
 []\T1/cmr/m/n/12 http://www.ipcop.org/2.0.0/en/admin/html/whatsnew.html , ab-ru
 f-bar am
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 483--485
+Underfull \hbox (badness 10000) in paragraph at lines 491--493
 []\T1/cmr/m/n/12 http://www.freebsd.org/doc/de/books/faq/hardware.html#which-ha
 rdware-
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 489.
-[10
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 497.
+[11
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 489.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 497.
  (./mpp_beleg.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 489.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 489.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 497.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 497.
 Package rerunfilecheck Info: File `mpp_beleg.out' has not changed.
 (rerunfilecheck)             Checksum: 2CEECE4FDCD62B9C2061084B5BF3896D;1148.
 
@@ -1042,16 +1048,16 @@ Package rerunfilecheck Info: File `mpp_beleg.out' has not changed.
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 106.43378pt have occurred.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 489.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 497.
  ) 
 Here is how much of TeX's memory you used:
- 11752 strings out of 495007
- 172539 string characters out of 3179690
- 614738 words of memory out of 3000000
- 14618 multiletter control sequences out of 15000+200000
+ 11760 strings out of 495007
+ 172672 string characters out of 3179690
+ 678232 words of memory out of 3000000
+ 14623 multiletter control sequences out of 15000+200000
  21415 words of font info for 48 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 45i,11n,49p,260b,1894s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 45i,11n,49p,260b,1892s stack positions out of 5000i,500n,10000p,200000b,50000s
  </home/m/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1200.600pk> </home/m/.te
 xmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </home/m/.texmf-var/fonts/p
 k/ljfour/jknappen/ec/ecrm0700.600pk> </home/m/.texmf-var/fonts/pk/ljfour/jknapp
@@ -1068,10 +1074,10 @@ appen/ec/ecrm1095.600pk> </home/m/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm35
 b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr
 /share/texlive/texmf-dist/fonts/type1/public/bera/fvmb8a.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/public/bera/fvmr8a.pfb>
-Output written on mpp_beleg.pdf (10 pages, 195660 bytes).
+Output written on mpp_beleg.pdf (11 pages, 222825 bytes).
 PDF statistics:
- 756 PDF objects out of 1000 (max. 8388607)
- 352 compressed objects within 4 object streams
- 157 named destinations out of 1000 (max. 500000)
- 134 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 763 PDF objects out of 1000 (max. 8388607)
+ 356 compressed objects within 4 object streams
+ 159 named destinations out of 1000 (max. 500000)
+ 139 words of extra memory for PDF output out of 10000 (max. 10000000)
 
