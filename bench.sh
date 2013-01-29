@@ -13,7 +13,6 @@ do
 		mpirun -np $cpu -hostfile load.txt cluster $val
 		mpirun -np $cpu -hostfile load.txt cluster $val
 		mpirun -np $cpu -hostfile load.txt cluster $val
-		echo ""
 	done
 done
 
