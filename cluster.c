@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
 {
 	int debug = 0;
 	int arrayausgabe = 0;
+	int datenerfassung = 1;
 	
 	//MPI-Variablen
 	int rank_world;			// Rang des Prozesses in MPI_COMM_WORLD
@@ -284,7 +285,7 @@ int main(int argc, char* argv[])
 		MPI_Gather(local, nLocal, MPI_INT, ergebnis, nLocal, MPI_INT, 0, MPI_COMM_WORLD);
 		
 
-		if(debug) printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
+		if(!datenerfassung) printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 
 		if (arrayausgabe)
 		{
@@ -296,18 +297,19 @@ int main(int argc, char* argv[])
 			printf("\n");
 		}
 		
-		if (debug) printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
+		if (!datenerfassung) printf("\n\nAlle nachfolgenden Werte sind Durchschnittswerte!\n");
 		
-		if (debug) printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
+		if (!datenerfassung) printf("\nDer gesamte Vorgang dauerte in Sekunden:\n -> %.20lf\n", overalltime_p/p_world);
 
-		if (debug) printf("\nSpeedup: S(p): -> %.20lf\n", speedup_p/p_world );
-		if (!debug) printf("\nSpeedup fuer %d Elemente auf %d Prozessoren - SpeedUp: %.3lf -Effizienz: %.3lf -Overhead: %lf -Laufzeit: %lf",n ,p_world , speedup_p/p_world, (speedup_p/p_world)/p_world, comtime_p/p_world, overalltime_p/p_world);
+		if (!datenerfassung) printf("\nSpeedup: S(p): -> %.20lf\n", speedup_p/p_world );
 		
-		if (debug) printf("\nEffizienz: E(p):\n -> %.20lf\n", (speedup_p/p_world)/p_world );
+		if (!datenerfassung) printf("\nEffizienz: E(p):\n -> %.20lf\n", (speedup_p/p_world)/p_world );
 		
-		if (debug) printf("\nPhase 1 benoetigte in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf \n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
+		if (!datenerfassung) printf("\nPhase 1 benoetigte in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf \n", phase1_p/p_world,(phase1_p/p_world)/(overalltime_p/p_world)*100 );
 
-		if (debug) printf("\nDer Kommunikationsoverhead betrung in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world)*100 );
+		if (!datenerfassung) printf("\nDer Kommunikationsoverhead betrung in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world)*100 );
+		
+		if (datenerfassung) printf("\n%d;%.3f;%.5f;%.6lf;%.6lf",n ,p_world , speedup_p/p_world, (speedup_p/p_world)/p_world, comtime_p/p_world, overalltime_p/p_world);
 	}
 	else
 	{
