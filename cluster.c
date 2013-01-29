@@ -309,7 +309,7 @@ int main(int argc, char* argv[])
 
 		if (!datenerfassung) printf("\nDer Kommunikationsoverhead betrung in Sekunden\n -> %.20lf\nund besass somit den prozentualen Anteil an der Laufzeit von\n -> %.20lf\n", comtime_p/p_world, (comtime_p/p_world)/(overalltime_p/p_world)*100 );
 		
-		if (datenerfassung) printf("\n%d;%d;%.3f;%.5f;%.6lf;%.6lf",n ,p_world , speedup_p/p_world, (speedup_p/p_world)/p_world, comtime_p/p_world, overalltime_p/p_world);
+		if (datenerfassung) printf("\n%d;%d;%.3f;%.5f;%.6lf;%.6lf;%.6lf",n ,p_world , speedup_p/p_world, (speedup_p/p_world)/p_world, comtime_p/p_world, overalltime_p/p_world, phase1_p/p_world);
 	}
 	else
 	{
