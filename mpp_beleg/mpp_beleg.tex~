@@ -235,7 +235,7 @@ Ein weiteres weiteres BASH-Skript \texttt{bench.sh} ruft die Bin\"ardatei mit de
 8, 10, 16 und 20 Prozessoren auf und gibt die jeweils gemessenen Zeitintervalle \"ubersichtlich aus um eine grafische Auswertung mit g\"angigen
 Tabellenkalkulationsprogrammen zu gestatten. 
 
-\subsection{Ergebnisse, Auswertung und abschließende Bewertung}
+\subsection{Ergebnisse}
 \subsubsection{Speedup}
 \begin{figure}[htb]
   \begin{center}
@@ -279,13 +279,15 @@ Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek v
 Eine weiterer aussagekräftiger Wert ist die Effizienz.
 Die Effizienz gibt die relative Verbesserung in der Verarbeitungsleistung an und ergibt sich aus dem Quotient aus Speedup und Prozessoranzahl.
 
+\subsection{Auswertung}
 
 \section{Parallelrechnersystem MC3}
 
 \subsection{Aufgabenstellung / Problembeschreibung}
 \subsection{Programmbeschreibung}
 \subsection{Laufzeitumgebung}
-\subsection{Ergebnisse, Auswertung und abschließende Bewertung}
+\subsection{Ergebnisse}
+\subsection{Auswertung}
 
 \section{Anhang}
 \definecolor{listinggray}{gray}{0.9}

@@ -252,12 +252,12 @@ Nach Ahmdal setzt sich die Gesamtlaufzeit des parallelisierten Algorithmus zusam
 Anteil) und einem Anteil an parallelisierbaren Code, dessen Laufzeit sich umgekehrt proportional zur Anzahl der benutzten Prozessoren verhält.
 Ahmdals Gesetz berücksichtigt hierbei jedoch nicht den mit steigender Prozessoranzahl ebenfalls wachsenden Kommunikationsaufwand. \\\\
 
-
 Das zu erwartende Laufzeitverhalten für reale Implementierungen legt daher nahe, das der Speedup nicht linear mit der Anzahl der eingesetzten Prozessoren
 ansteigt, sondern auf Grund des ebenfalls ansteigenden Kommunikationsaufwandes ab einer bestimmten Prozessoranzahl wieder abnimmt. \\ \\
 
-Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass breits bei Nutzung von 4 Prozessoren der Speedup mit steigender
-Prozessoranzahl abnimmt.  Der im Test beste erreichte Speedup stellte sich bei Nutzung zweier Prozessoren und hinreichend vieler Elemente ein (>=40.000). Breits
+Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass bereits bei Nutzung von 4 Prozessoren der Speedup mit
+steigender
+Prozessoranzahl abnimmt. Der im Test beste erreichte Speedup stellte sich bei Nutzung zweier Prozessoren und hinreichend vieler Elemente ein (>=40.000). Breits
 beim Einsatz von von vier Prozessoren war die Laufzeitverringerung gegenüber der vollständig sequenziellen Implementierung nur noch marginal, Tendenz abnehmend.
 Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeitverhalten ist das Ergebnis weiterer Einflussfaktoren wie beispielsweise:
 \begin{itemize}
