@@ -286,14 +286,33 @@ und MPI Implementierung, zur\"uckzuf\"uhren.\\\\
 
 Zusammenfassend kann die Aussage getroffen werden, dass die Implementierung des Merge-Splittung-Sort Algorithmus unter der MPI-Umgebung nicht geeignet ist.\\
 Die unter bestimmten Voraussetzungen zu erreichende maginale Verk\"urzung der Gesamtlaufzeit ist gering, sodass vor der konkreten Nutzung dieser
-Implementierung im vornherrein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
+Implementierung im vornherein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
 f\"uhrt.
 
-\section{Parallelrechnersystem MC3}
 
+\section{Parallelrechnersystem MC-3}
 \subsection{Aufgabenstellung / Problembeschreibung}
+F\"ur das Parallelrechnersystem MC-3 wurde die Aufgabe der nummerischen Integration mittels Parabelformel gew\"ahlt. Hierbei sollen Funktionen mit Hilfe der
+Parabelformel \"uber einem gegebenen Intervall parallel von mehreren Rechenkernen nummerisch integriert werden.\\
+Vorgegeben waren zu diesem Zweck folgende Funktionen:
+\begin{itemize}
+ \item $f(x) = x*sin(x)$ in dem Intervall von 0 bis $\pi$
+ \item $f(x) = \frac{4}{x^2+1}$ in dem Intervall von 0 bis 1
+\end{itemize}
+Das Ergebnis der Integration soll $\pi$ sein. Dabei soll das doppeltgenaue Maschinen-$\pi$ als Referenz f\"ur die Genauigkeit der Berechnung dienen.\\
+
+Dies wurde in einem C-Programm umgesetzt. Die Anzahl der Prozessoren, die zu integrierende Funktion und die Anzahl der Zerlegungen des Intervalls sollen dabei
+Eingabewerte sein.\\
+Als Resultat soll das Laufzeitverhalten und die Genauigkeit der Funktionen stehen.
+
 \subsection{Programmbeschreibung}
+
+
 \subsection{Laufzeitumgebung}
+Hier ist nur ein Skript zur Erfassung der Messwerte f\"ur verschiedene Prozessoranzahlen, Intervallteilungen pro Prozessor und Funktionen zu nennen.\\
+Dieses Skript ist im Anhang\nameref{mc3:erfassungsh} zu finden.\\\\
+
+
 \subsection{Ergebnisse}
 \subsection{Auswertung}
 
@@ -452,6 +471,49 @@ do
   done
 done
 \end{lstlisting}
+
+
+\subsection{Quellcode-Listings MC-3}
+\label{mc3:erfassungsh}
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\lstset{
+	language=BASH,
+	keywordstyle=\bfseries\ttfamily\color[rgb]{0,0,1},
+	identifierstyle=\ttfamily,
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\ttfamily\color[rgb]{0.627,0.126,0.941},
+	showstringspaces=false,
+	basicstyle=\scriptsize,
+	numbers=left,
+	stepnumber=1,
+	numbersep=6pt,
+	numberstyle=\tiny,
+	tabsize=1,
+	breaklines=true,	%automatischer Zeilenumbruch
+	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	breakatwhitespace=false,
+	aboveskip={1.5\baselineskip},
+  	columns=fixed,
+  	upquote=true,
+  	extendedchars=true,
+  	backgroundcolor=\color[rgb]{0.97,0.97,0.97},
+}
+\begin{lstlisting}[captionpos=b, caption=MC-3 BASH-Script: erfassung.sh, label=mc3erfassungsh]
+#!/bin/bash
+echo 'Prozessoranzahl;Intervalle;Laufzeit;Speedup;Abweichung' > $1
+for x in 2 ; do
+	for y in 1 2 4; do
+			for z in 1 2 4 8 16 32 64 128 256 512 1024 2048; do
+				echo -n $(( $x*$y ))\;$z\; >> $1
+				run -f1 $y $x mc3.px $z $2 >> $1
+				echo '' >> $1
+			done
+	done
+done
+\end{lstlisting}
+
+
 
 
 %Beginn einer neuen Seite

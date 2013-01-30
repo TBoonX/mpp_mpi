@@ -286,14 +286,33 @@ und MPI Implementierung, zur\"uckzuf\"uhren.\\\\
 
 Zusammenfassend kann die Aussage getroffen werden, dass die Implementierung des Merge-Splittung-Sort Algorithmus unter der MPI-Umgebung nicht geeignet ist.\\
 Die unter bestimmten Voraussetzungen zu erreichende maginale Verk\"urzung der Gesamtlaufzeit ist gering, sodass vor der konkreten Nutzung dieser
-Implementierung im vornherrein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
+Implementierung im vornherein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
 f\"uhrt.
 
-\section{Parallelrechnersystem MC3}
 
+\section{Parallelrechnersystem MC-3}
 \subsection{Aufgabenstellung / Problembeschreibung}
+F\"ur das Parallelrechnersystem MC-3 wurde die Aufgabe der nummerischen Integration mittels Parabelformel gew\"ahlt. Hierbei sollen Funktionen mit Hilfe der
+Parabelformel \"uber einem gegebenen Intervall parallel von mehreren Rechenkernen nummerisch integriert werden.\\
+Vorgegeben waren zu diesem Zweck folgende Funktionen:
+\begin{itemize}
+ \item $f(x) = x*sin(x)$ in dem Intervall von 0 bis $\pi$
+ \item $f(x) = \frac{4}{x^2+1}$ in dem Intervall von 0 bis 1
+\end{itemize}
+Das Ergebnis der Integration soll $\pi$ sein. Dabei soll das doppeltgenaue Maschinen-$\pi$ als Referenz f\"ur die Genauigkeit der Berechnung dienen.\\
+
+Dies wurde in einem C-Programm umgesetzt. Die Anzahl der Prozessoren, die zu integrierende Funktion und die Anzahl der Zerlegungen des Intervalls sollen dabei
+Eingabewerte sein.\\
+Als Resultat soll das Laufzeitverhalten und die Genauigkeit der Funktionen stehen.
+
 \subsection{Programmbeschreibung}
+
+
 \subsection{Laufzeitumgebung}
+Hier ist nur ein Skript zur Erfassung der Messwerte f\"ur verschiedene Prozessoranzahlen, Intervallteilungen pro Prozessor und Funktionen zu nennen.\\
+Dieses Skript ist im Anhang zu finden.\\\\
+
+
 \subsection{Ergebnisse}
 \subsection{Auswertung}
 
@@ -453,6 +472,46 @@ do
 done
 \end{lstlisting}
 
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\lstset{
+	language=BASH,
+	keywordstyle=\bfseries\ttfamily\color[rgb]{0,0,1},
+	identifierstyle=\ttfamily,
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\ttfamily\color[rgb]{0.627,0.126,0.941},
+	showstringspaces=false,
+	basicstyle=\scriptsize,
+	numbers=left,
+	stepnumber=1,
+	numbersep=6pt,
+	numberstyle=\tiny,
+	tabsize=1,
+	breaklines=true,	%automatischer Zeilenumbruch
+	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	breakatwhitespace=false,
+	aboveskip={1.5\baselineskip},
+  	columns=fixed,
+  	upquote=true,
+  	extendedchars=true,
+  	backgroundcolor=\color[rgb]{0.97,0.97,0.97},
+}
+\begin{lstlisting}[captionpos=b, caption=MC-3 BASH-Script: erfassung.sh, label=mc3erfassungsh]
+#!/bin/bash
+echo 'Prozessoranzahl;Intervalle;Laufzeit;Speedup;Abweichung' > $1
+for x in 2 ; do
+	for y in 1 2 4; do
+			for z in 1 2 4 8 16 32 64 128 256 512 1024 2048; do
+				echo -n $(( $x*$y ))\;$z\; >> $1
+				run -f1 $y $x mc3.px $z $2 >> $1
+				echo '' >> $1
+			done
+	done
+done
+\end{lstlisting}
+
+
+
 
 %Beginn einer neuen Seite
 \clearpage
@@ -480,29 +539,10 @@ Broadcast-Dom\"anen zu verkleinern.
 Musterfrau, Renate: Muster. Frankfurt 2003.
 
 
-Mustermann, Helmut: Noch ein Muster. Mit einer Einleitung hrsg. von Frank Muster. Frankfurt 2003.
-
 \begin{thebibliography}{99}
 
 \bibitem{IPCopManual} http://www.ipcop.org/1.4.0/en/install/html/ , abrufbar am
 16.12.2012
-
-\bibitem{IPCopSamba} http://www.ipcopwiki.de/index.php/Samba\_Server ,
-abrufbar am 20.12.2012\\
-\textit{Anm.: Der Artikel zu diesem Addon ist zwar noch verf\"ugbar, jedoch
-nicht die eigentlichen Dateien, die f\"ur das Addon erforderlich sind.}
-
-\bibitem{IPCop20Hardware}
-http://www.ipcop.org/2.0.0/en/admin/html/whatsnew.html , abrufbar am 11.01.2013
-
-\bibitem{IPFireAddons} http://wiki.ipfire.org/de/addons/start , abrufbar am
-10.01.2013
-
-\bibitem{FreeBSDHardware}
-http://www.freebsd.org/doc/de/books/faq/hardware.html\#which-hardware-to-get ,
-abrufbar am 12.01.2013
-
-\bibitem{dhcp} http://www.isc.org/software/dhcp , abrufbar am 11.01.2013
 
 \end{thebibliography}
 \end{document}
