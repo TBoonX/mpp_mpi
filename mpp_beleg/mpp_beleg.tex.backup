@@ -162,7 +162,7 @@ Anzahl nat\"urlicher Zahlen in zuf\"alliger Reihenfolge auf einer vorzugebenden 
 werden um im Anschlu\ss{} Aussagen \"uber das Laufzeitverhalten der Implementierung in Abh\"angigkeit zur verwendeten Element- und Prozessorzahl treffen zu
 k\"onnen.
 
-Der geforderte Algorithmus wurde in einem C-Programm unter Zuhilfenahme der MPI Bibliothek   umgesetzt.
+Dieser Algorithmus wurde in einem C-Programm unter Zuhilfenahme der MPI Bibliothek umgesetzt.
 Nachfolgend werden Aussagen zum Laufzeitverhalten getroffen. Dabei wurden den Laufzeitmessungen die Anzahl zu sortierender Elemente wie in der Aufgabenstellung
 empfohlen mit 20.000, 40.000 sowie 80.000 Elementen zu Grunde gelegt.
 
@@ -230,19 +230,64 @@ Minuten
 Verf\"alschung der Messergebnisse durch Fremdeinwirkung zu minimieren
 \end{itemize}
 
+
 Ein weiteres weiteres BASH-Skript \texttt{bench.sh} ruft die Bin\"ardatei mit den empfohlenen Elementanzahlen 20.000, 40.000 und 80.000 sequentiell f\"ur 2, 4,
 8, 10, 16 und 20 Prozessoren auf und gibt die jeweils gemessenen Zeitintervalle \"ubersichtlich aus um eine grafische Auswertung mit g\"angigen
 Tabellenkalkulationsprogrammen zu gestatten. 
 
-\subsection{Ergebnisse, Auswertung und abschließende Bewertung}
+\subsection{Ergebnisse}
+\subsubsection{Speedup}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../speedup.png}
+  \end{center}
+  \caption{\label{mpispeedup}
+    Speedup-Diagramm f\"ur die MPI-Implementierung}
+\end{figure}
+Der Speedup ist der Quotient aus der Laufzeit des Algorithmus bei der Nutzung eines Prozessors und der Laufzeit bei Nutzung mehrerer Prozessoren.
+Ein Speedup-Wert von 1 sagt aus, dass der Algorithmus auf einem Prozessor der Laufzeit des Algorithmus auf mehreren Prozessoren entspricht.
+Im Idealfall steigt der Speedup proportional mit der Anzahl der Prozessoren. \\\\
 
+Nach Ahmdal setzt sich die Gesamtlaufzeit des parallelisierten Algorithmus zusammen aus einem Anteil mit nichtparallelisierbaren Code (sog.: sequenzieller
+Anteil) und einem Anteil an parallelisierbaren Code, dessen Laufzeit sich umgekehrt proportional zur Anzahl der benutzten Prozessoren verhält.
+Ahmdals Gesetz berücksichtigt hierbei jedoch nicht den mit steigender Prozessoranzahl ebenfalls wachsenden Kommunikationsaufwand. \\\\
+
+Das zu erwartende Laufzeitverhalten für reale Implementierungen legt daher nahe, das der Speedup nicht linear mit der Anzahl der eingesetzten Prozessoren
+ansteigt, sondern auf Grund des ebenfalls ansteigenden Kommunikationsaufwandes ab einer bestimmten Prozessoranzahl wieder abnimmt. \\ \\
+
+Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass bereits bei Nutzung von 4 Prozessoren der Speedup mit
+steigender
+Prozessoranzahl abnimmt. Der im Test beste erreichte Speedup stellte sich bei Nutzung zweier Prozessoren und hinreichend vieler Elemente ein (>=40.000). Breits
+beim Einsatz von von vier Prozessoren war die Laufzeitverringerung gegenüber der vollständig sequenziellen Implementierung nur noch marginal, Tendenz abnehmend.
+Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeitverhalten ist das Ergebnis weiterer Einflussfaktoren wie beispielsweise:
+\begin{itemize}
+  \item Eingesetzte Hardware (Netzwerkstruktur, nicht exklusiv genutzte Hardware )
+  \item Eingesetzte Software (Betriebssystem, genutze Implementierung des Message-Passing-Interface)
+  \item Implementierung des Algorithmus (eingesetzter Sortieralgorithmus, Kommunikationsablauf)
+\end{itemize}
+Im Laufe der Implementation wurde ein direkter Einfluss des verwendeten Sortieralgorithmus auf die Gesamtlaufzeit deutlich. Es wurden  verschiedene
+Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek von C  enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
+
+\subsubsection{Effizienz}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../effizienz.png}
+  \end{center}
+  \caption{\label{mpieffizienz}
+    Effizienz-Diagramm f\"ur die MPI-Implementierung}
+\end{figure}
+Eine weiterer aussagekräftiger Wert ist die Effizienz.
+Die Effizienz gibt die relative Verbesserung in der Verarbeitungsleistung an und ergibt sich aus dem Quotient aus Speedup und Prozessoranzahl.
+
+\subsection{Auswertung}
 
 \section{Parallelrechnersystem MC3}
 
 \subsection{Aufgabenstellung / Problembeschreibung}
 \subsection{Programmbeschreibung}
 \subsection{Laufzeitumgebung}
-\subsection{Ergebnisse, Auswertung und abschließende Bewertung}
+\subsection{Ergebnisse}
+\subsection{Auswertung}
 
 \section{Anhang}
 \definecolor{listinggray}{gray}{0.9}

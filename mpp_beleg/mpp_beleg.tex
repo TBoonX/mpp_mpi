@@ -255,18 +255,18 @@ Ahmdals Gesetz berücksichtigt hierbei jedoch nicht den mit steigender Prozessor
 Das zu erwartende Laufzeitverhalten für reale Implementierungen legt daher nahe, das der Speedup nicht linear mit der Anzahl der eingesetzten Prozessoren
 ansteigt, sondern auf Grund des ebenfalls ansteigenden Kommunikationsaufwandes ab einer bestimmten Prozessoranzahl wieder abnimmt. \\ \\
 
-Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass bereits bei Nutzung von 4 Prozessoren der Speedup mit
+Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass bereits bei Nutzung von mehr als 10 Prozessoren der Speedup mit
 steigender
-Prozessoranzahl abnimmt. Der im Test beste erreichte Speedup stellte sich bei Nutzung zweier Prozessoren und hinreichend vieler Elemente ein (>=40.000). Breits
-beim Einsatz von von vier Prozessoren war die Laufzeitverringerung gegenüber der vollständig sequenziellen Implementierung nur noch marginal, Tendenz abnehmend.
-Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeitverhalten ist das Ergebnis weiterer Einflussfaktoren wie beispielsweise:
+Prozessoranzahl abnimmt. Der im Test beste erreichte Speedup stellte sich bei Nutzung von 10 Prozessoren und hinreichend vieler Elemente ein (>= 40.000).
+Bereits beim Einsatz von von 16 Prozessoren war die Laufzeitverringerung gegenüber der vollständig sequenziellen Implementierung nur noch marginal, Tendenz
+abnehmend. Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeitverhalten ist das Ergebnis weiterer Einflussfaktoren wie beispielsweise:
 \begin{itemize}
   \item Eingesetzte Hardware (Netzwerkstruktur, nicht exklusiv genutzte Hardware )
   \item Eingesetzte Software (Betriebssystem, genutze Implementierung des Message-Passing-Interface)
   \item Implementierung des Algorithmus (eingesetzter Sortieralgorithmus, Kommunikationsablauf)
 \end{itemize}
 Im Laufe der Implementation wurde ein direkter Einfluss des verwendeten Sortieralgorithmus auf die Gesamtlaufzeit deutlich. Es wurden  verschiedene
-Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek von C  enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
+Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek von C enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
 
 \subsubsection{Effizienz}
 \begin{figure}[htb]
