@@ -235,7 +235,21 @@ Ein weiteres weiteres BASH-Skript \texttt{bench.sh} ruft die Bin\"ardatei mit de
 8, 10, 16 und 20 Prozessoren auf und gibt die jeweils gemessenen Zeitintervalle \"ubersichtlich aus um eine grafische Auswertung mit g\"angigen
 Tabellenkalkulationsprogrammen zu gestatten. 
 
-\subsection{Ergebnisse}
+\subsection{Ergebnisse und Auswertung}
+
+\subsubsection{Initiale Phase}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../Anteil_Phase_1.PNG}
+  \end{center}
+  \caption{\label{mpiphaseeins}
+    Phase-1-Diagramm f\"ur die MPI-Implementierung}
+\end{figure}
+In der Initialphase des Merge-Splitting-Sort-Algorithmus wird das lokale Array eines jeden Prozessors initial sortiert. Da die Initialphase im Gegensatz zu den
+nachfolgenden Phasen unabh\"angig von der Anzahl der genutzen Prozessoren immer nur einmalig durchlaufen wird, sinkt der Anteil der Initialphase an der
+Gesamtlaufzeit des Algorithmus mit steigender Prozessoranzahl. W\"ahrend sich bei der Nutzung von nur zwei Prozessoren noch ein Laufzeitanteil der Phase 1 von
+50 Prozent ergibt, sinkt dieser Wert bei Nutzung von 10 Prozessoren schon auf unter 10 Prozent, Tendenz weiter fallend.
+
 \subsubsection{Speedup}
 \begin{figure}[htb]
   \begin{center}
@@ -255,18 +269,18 @@ Ahmdals Gesetz berücksichtigt hierbei jedoch nicht den mit steigender Prozessor
 Das zu erwartende Laufzeitverhalten für reale Implementierungen legt daher nahe, das der Speedup nicht linear mit der Anzahl der eingesetzten Prozessoren
 ansteigt, sondern auf Grund des ebenfalls ansteigenden Kommunikationsaufwandes ab einer bestimmten Prozessoranzahl wieder abnimmt. \\ \\
 
-Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass bereits bei Nutzung von 4 Prozessoren der Speedup mit
+Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass bereits bei Nutzung von mehr als 10 Prozessoren der Speedup mit
 steigender
-Prozessoranzahl abnimmt. Der im Test beste erreichte Speedup stellte sich bei Nutzung zweier Prozessoren und hinreichend vieler Elemente ein (>=40.000). Breits
-beim Einsatz von von vier Prozessoren war die Laufzeitverringerung gegenüber der vollständig sequenziellen Implementierung nur noch marginal, Tendenz abnehmend.
-Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeitverhalten ist das Ergebnis weiterer Einflussfaktoren wie beispielsweise:
+Prozessoranzahl abnimmt. Der im Test beste erreichte Speedup stellte sich bei Nutzung von 10 Prozessoren und hinreichend vieler Elemente ein (>= 80.000).
+Bereits beim Einsatz von von 16 Prozessoren war die Laufzeitverringerung gegenüber der vollständig sequenziellen Implementierung nur noch marginal, Tendenz
+abnehmend. Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeitverhalten ist das Ergebnis weiterer Einflussfaktoren wie beispielsweise:
 \begin{itemize}
   \item Eingesetzte Hardware (Netzwerkstruktur, nicht exklusiv genutzte Hardware )
   \item Eingesetzte Software (Betriebssystem, genutze Implementierung des Message-Passing-Interface)
   \item Implementierung des Algorithmus (eingesetzter Sortieralgorithmus, Kommunikationsablauf)
 \end{itemize}
 Im Laufe der Implementation wurde ein direkter Einfluss des verwendeten Sortieralgorithmus auf die Gesamtlaufzeit deutlich. Es wurden  verschiedene
-Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek von C  enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
+Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek von C enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
 
 \subsubsection{Effizienz}
 \begin{figure}[htb]
@@ -277,9 +291,19 @@ Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek v
     Effizienz-Diagramm f\"ur die MPI-Implementierung}
 \end{figure}
 Eine weiterer aussagekräftiger Wert ist die Effizienz.
-Die Effizienz gibt die relative Verbesserung in der Verarbeitungsleistung an und ergibt sich aus dem Quotient aus Speedup und Prozessoranzahl.
+Die Effizienz gibt die relative Verbesserung in der Verarbeitungsleistung an und ergibt sich aus dem Quotient von Speedup und Prozessoranzahl.
+Wie aus dem betreffenden Diagramm ersichtlich wird, nimmt die Effizienz umgekehrt proportional zur Anzahl der eingesetzten
+Prozessoren ab. Dabei hat die Anzahl der zu sortierenden Elemente nur marginalen Einfluss auf die jeweiligen Effizienzwerte. 
 
-\subsection{Auswertung}
+\subsubsection{Kommunikationsoverhead}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../Kommunikationsanteil.PNG}
+  \end{center}
+  \caption{\label{mpikommoverhead}
+    Diagramm des Kommunikationsoverheads f\"ur die MPI-Implementierung}
+\end{figure}
+
 
 \section{Parallelrechnersystem MC3}
 
