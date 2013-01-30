@@ -167,53 +167,29 @@ Nachfolgend werden Aussagen zum Laufzeitverhalten getroffen. Dabei wurden den La
 empfohlen mit 20.000, 40.000 sowie 80.000 Elementen zu Grunde gelegt.
 
 \subsection{Programmbeschreibung}
+Zun\"achst wird ein Array mit n Zufallszahlen von jedem Prozess erzeugt. Dieses wird sortiert, wobei die lokale Prozessorlaufzeit T(1) ermittelt wird. Jeder
+Prozessor erzeugt n/p Zufallszahlen und speichert sie in einem Array ab, wobei p die Anzahl der verwendet Prozessoren angibt. Die Kommunikation zwischen den
+Prozessoren wird durch die Funktionen \texttt{MPI\_Send()} und \texttt{MPI\_Recv()} realisiert. Die Zeiterfassung erfolgt dabei mit der
+Funktion \texttt{MPI\_Wtime()}. Anschlie\ss{}end wird der Merge-Splitting-Sort-Algorithmus ausgef\"uhrt. Nach diesem verteilten Sortiervorgang ermittelt jeder
+Prozessor die ben\"otigten Messwerte:
+\begin{itemize}
+ \item Gesamtlaufzeit
+ \item Speedup
+ \item Anteil der initialen Phase
+ \item Kommunikationsanteil
+\end{itemize}
+Ein ausgezeichneter Prozessor sammelt die erfassten Werte und die sortierten Arrays ein und ermittelt die Durchschnittswerte. Dies erfolgt mit Hilfe der
+Funktionen \texttt{MPI\_Reduce()} und \texttt{MPI\_Gather()}. Dieser Prozessor ist au\ss{}erdem f\"ur die Ausgabe der Resultate auf der Konsole zust\"andig.
 
-\definecolor{listinggray}{gray}{0.9}
-\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
-\lstset{
-	language=C,
-	keywordstyle=\bfseries\ttfamily\color[rgb]{0,0,1},
-	identifierstyle=\ttfamily,
-	commentstyle=\color[rgb]{0.133,0.545,0.133},
-	stringstyle=\ttfamily\color[rgb]{0.627,0.126,0.941},
-	showstringspaces=false,
-	basicstyle=\scriptsize,
-	numbers=left,
-	stepnumber=1,
-	numbersep=6pt,
-	numberstyle=\tiny,
-	tabsize=2,
-	breaklines=true,	%automatischer Zeilenumbruch
-	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
-	breakatwhitespace=false,
-	aboveskip={1.5\baselineskip},
-  	columns=fixed,
-  	upquote=true,
-  	extendedchars=true,
-  	backgroundcolor=\color[rgb]{0.97,0.97,0.97},
-}
-\begin{lstlisting}[captionpos=b, caption=MPI C-Programm: cluster.c, label=mpiclusterc]
-#include "mpi.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
+Bei Aufruf erwartet das Programm folgendene Startparameter:
+\begin{description}
+ \item [n:]  Gr\"o\ss{}e des Gesamtarray an zu sortierenden Elementen, wobei der Wert n ein ganzzahliges Vielfaches der verwendeten
+Prozessoranzahl sein muss
+ \item [k:]  (optional) Die \"Ubergabe dieses Parameters bewirkt zus\"atzliche Ausgabe des sortierten Arrays
+\end{description}
 
-			//ungerade Prozessornummer
-
-			//erhalte Array
-			MPI_Recv(&local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD, status);
-
-			//sortiere Array
-			wtimesinnersort[j*2+0] = MPI_Wtime();
-			quicksort(local, 0, nLocal*2-1);
-			wtimesinnersort[j*2+1] = MPI_Wtime();
-
-			//obere Teil des Arrays wird an Prozessor rank_world+1 gesendet
-			MPI_Send(&local[nLocal], nLocal, MPI_INT, rank_world+1, 1, MPI_COMM_WORLD);
-		}
-
-\end{lstlisting}
-
+Der vollst\"andige Quellcode des Programms sowie aller Skripte liegt dem Projektordner und ist au\ss{}erdem aus dem \"offentlichen Repository unter
+\footnote{\url{https://github.com/mkirbst/mpp_mpi}} abrufbar.
 
 \subsection{Laufzeitumgebung}
 Um die Entwicklung und die Tests der Implementierung so effektiv wie m\"oglich zu gestalten, wurden mehrere BASH-Skripte erstellt.
@@ -229,7 +205,6 @@ Minuten
  \item Ausf\"uhrung der resultierenden Bin\"ardatei auf den \textbf{p} Rechnern mit der geringsten durchschnittlichen Auslastung um das Risiko einer
 Verf\"alschung der Messergebnisse durch Fremdeinwirkung zu minimieren
 \end{itemize}
-
 
 Ein weiteres weiteres BASH-Skript \texttt{bench.sh} ruft die Bin\"ardatei mit den empfohlenen Elementanzahlen 20.000, 40.000 und 80.000 sequentiell f\"ur 2, 4,
 8, 10, 16 und 20 Prozessoren auf und gibt die jeweils gemessenen Zeitintervalle \"ubersichtlich aus um eine grafische Auswertung mit g\"angigen
@@ -311,11 +286,11 @@ und MPI Implementierung, zur\"uckzuf\"uhren.\\\\
 
 Zusammenfassend kann die Aussage getroffen werden, dass die Implementierung des Merge-Splittung-Sort Algorithmus unter der MPI-Umgebung nicht geeignet ist.\\
 Die unter bestimmten Voraussetzungen zu erreichende maginale Verk\"urzung der Gesamtlaufzeit ist gering, sodass vor der konkreten Nutzung dieser
-Implementierung im vornherrein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
+Implementierung im vornherein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
 f\"uhrt.
 
-\section{Parallelrechnersystem MC3}
 
+\section{Parallelrechnersystem MC3}
 \subsection{Aufgabenstellung / Problembeschreibung}
 \subsection{Programmbeschreibung}
 \subsection{Laufzeitumgebung}
@@ -505,29 +480,10 @@ Broadcast-Dom\"anen zu verkleinern.
 Musterfrau, Renate: Muster. Frankfurt 2003.
 
 
-Mustermann, Helmut: Noch ein Muster. Mit einer Einleitung hrsg. von Frank Muster. Frankfurt 2003.
-
 \begin{thebibliography}{99}
 
 \bibitem{IPCopManual} http://www.ipcop.org/1.4.0/en/install/html/ , abrufbar am
 16.12.2012
-
-\bibitem{IPCopSamba} http://www.ipcopwiki.de/index.php/Samba\_Server ,
-abrufbar am 20.12.2012\\
-\textit{Anm.: Der Artikel zu diesem Addon ist zwar noch verf\"ugbar, jedoch
-nicht die eigentlichen Dateien, die f\"ur das Addon erforderlich sind.}
-
-\bibitem{IPCop20Hardware}
-http://www.ipcop.org/2.0.0/en/admin/html/whatsnew.html , abrufbar am 11.01.2013
-
-\bibitem{IPFireAddons} http://wiki.ipfire.org/de/addons/start , abrufbar am
-10.01.2013
-
-\bibitem{FreeBSDHardware}
-http://www.freebsd.org/doc/de/books/faq/hardware.html\#which-hardware-to-get ,
-abrufbar am 12.01.2013
-
-\bibitem{dhcp} http://www.isc.org/software/dhcp , abrufbar am 11.01.2013
 
 \end{thebibliography}
 \end{document}
