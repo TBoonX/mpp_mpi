@@ -303,8 +303,16 @@ Prozessoren ab. Dabei hat die Anzahl der zu sortierenden Elemente nur marginalen
   \caption{\label{mpikommoverhead}
     Diagramm des Kommunikationsanteils f\"ur die MPI-Implementierung}
 \end{figure}
-Die Auswertung der Messwerte zeigt das mit steigender Anzahl zu sortierender Elemente der Kommunikationsanteil an der Gesamtlaufzeit exponentiell ansteigt.
-Breits bei Verwendung von 8 Prozessoren betr\"agt der Kommunikationsanteil an der Gesamtlaufzeit schon etwa 70 Prozent 
+Die Auswertung der Messwerte zeigt, dass mit steigender Anzahl zu sortierender Elemente der Kommunikationsanteil an der Gesamtlaufzeit exponentiell ansteigt.
+Bereits bei Verwendung von 8 Prozessoren betr\"agt der Kommunikationsanteil an der Gesamtlaufzeit etwa 70 Prozent und steigt weiter an, sodass schon
+f\"ur 20 Prozessoren der Kommunikationsanteil \"uber 80 Prozent mit weiterhin steigender Tendenz betr\"agt.
+Dieser hohe Anteil der Kommunikation an der Gesamtlaufzeit ist durch die in 2.4.2 aufgez\"ahlten Einflussfaktoren, besonders aber auf die Netzwerkstruktur und
+und MPI Implementierung, zur\"uckzuf\"uhren.\\\\
+
+Zusammenfassend kann die Aussage getroffen werden, dass die Implementierung des Merge-Splittung-Sort Algorithmus unter der MPI-Umgebung nicht geeignet ist.\\
+Die unter bestimmten Voraussetzungen zu erreichende maginale Verk\"urzung der Gesamtlaufzeit ist gering, sodass vor der konkreten Nutzung dieser
+Implementierung im vornherrein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
+f\"uhrt.
 
 \section{Parallelrechnersystem MC3}
 
