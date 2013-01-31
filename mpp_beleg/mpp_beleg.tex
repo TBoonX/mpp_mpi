@@ -326,47 +326,32 @@ Dieses Skript ist im Anhang \nameref{mc3:erfassungsh} zu finden.\\\\
 
 \subsection{Ergebnisse}
 \subsubsection{Speedup}
+
 \begin{figure}[htb]
   \begin{center}
-    \includegraphics[width=1\hsize]{../speedup.png}
+    \includegraphics[width=1\hsize]{../mc3_speedup.png}
   \end{center}
-  \caption{\label{mpispeedup}
-    Speedup-Diagramm f\"ur die MC-3-Implementierung mit der Funktion 1}
+  \caption{\label{mc3speedup}
+    Diagramm den Speedup f\"ur die MC-3-Implementierung}
 \end{figure}
+
 \begin{figure}[htb]
   \begin{center}
-    \includegraphics[width=1\hsize]{../speedup.png}
+    \includegraphics[width=1\hsize]{../mc3_speeduppercpu.png}
   \end{center}
-  \caption{\label{mpispeedup}
-    Speedup-Diagramm f\"ur die MC-3-Implementierung mit der Funktion 2}
+  \caption{\label{mc3speeduppercpu}
+    Diagramm den Speedup f\"ur die MC-3-Implementierung}
 \end{figure}
-Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass bereits bei Nutzung von mehr als 10 Prozessoren der Speedup mit
-steigender
-Prozessoranzahl abnimmt. Der im Test beste erreichte Speedup stellte sich bei Nutzung von 10 Prozessoren und hinreichend vieler Elemente ein (>= 80.000).
-Bereits beim Einsatz von von 16 Prozessoren war die Laufzeitverringerung gegenüber der vollständig sequenziellen Implementierung nur noch marginal, Tendenz
-abnehmend. Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeitverhalten ist das Ergebnis weiterer Einflussfaktoren wie beispielsweise:
-\begin{itemize}
-  \item Eingesetzte Hardware (Netzwerkstruktur, nicht exklusiv genutzte Hardware )
-  \item Eingesetzte Software (Betriebssystem, genutze Implementierung des Message-Passing-Interface)
-  \item Implementierung des Algorithmus (eingesetzter Sortieralgorithmus, Kommunikationsablauf)
-\end{itemize}
-Im Laufe der Implementation wurde ein direkter Einfluss des verwendeten Sortieralgorithmus auf die Gesamtlaufzeit deutlich. Es wurden  verschiedene
-Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek von C enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
+Auf Grund der Bregrenzung auf maximal acht Prozessoren k\"onnen nur besschr\"ankte Aussagen dar\"uber getroffen werden, ob sich das Laufzeitverhalten
+mit weiter ansteigender Prozessoranzahl an das von Ahmdals Gesetz beschriebene Verhalten ann\"ahrt.
 
 \subsubsection{Effizienz}
 \begin{figure}[htb]
   \begin{center}
-    \includegraphics[width=1\hsize]{../effizienz.png}
+    \includegraphics[width=1\hsize]{../mc3_effizienz.png}
   \end{center}
-  \caption{\label{mpieffizienz}
-    Effizienz-Diagramm f\"ur die MC-3-Implementierung mit der Funktion 1}
-\end{figure}
-\begin{figure}[htb]
-  \begin{center}
-    \includegraphics[width=1\hsize]{../effizienz.png}
-  \end{center}
-  \caption{\label{mpieffizienz}
-    Effizienz-Diagramm f\"ur die MC-3-Implementierung mit der Funktion 2}
+  \caption{\label{mc3effizienz}
+    Diagramm der Effizienz f\"ur die MC-3-Implementierung}
 \end{figure}
 Eine weiterer aussagekräftiger Wert ist die Effizienz.
 Die Effizienz gibt die relative Verbesserung in der Verarbeitungsleistung an und ergibt sich aus dem Quotient von Speedup und Prozessoranzahl.
@@ -376,45 +361,20 @@ Prozessoren ab. Dabei hat die Anzahl der zu sortierenden Elemente nur marginalen
 \subsubsection{Kommunikationsanteil}
 \begin{figure}[htb]
   \begin{center}
-    \includegraphics[width=1\hsize]{../Kommunikationsanteil.PNG}
+    \includegraphics[width=1\hsize]{../mc3_laufzeit.png}
   \end{center}
-  \caption{\label{mpikommoverhead}
-    Diagramm des Kommunikationsanteils f\"ur die MC3-Implementierung mit der Funktion 1}
+  \caption{\label{mc3kommanteil}
+    Diagramm der Laufzeit f\"ur die MC-3-Implementierung}
 \end{figure}
-\begin{figure}[htb]
-  \begin{center}
-    \includegraphics[width=1\hsize]{../Kommunikationsanteil.PNG}
-  \end{center}
-  \caption{\label{mpikommoverhead}
-    Diagramm des Kommunikationsanteils f\"ur die MC3-Implementierung mit der Funktion 2}
-\end{figure}
-Die Auswertung der Messwerte zeigt, dass mit steigender Anzahl zu sortierender Elemente der Kommunikationsanteil an der Gesamtlaufzeit exponentiell ansteigt.
-Bereits bei Verwendung von 8 Prozessoren betr\"agt der Kommunikationsanteil an der Gesamtlaufzeit etwa 70 Prozent und steigt weiter an, sodass schon
-f\"ur 20 Prozessoren der Kommunikationsanteil \"uber 80 Prozent mit weiterhin steigender Tendenz betr\"agt.
-Dieser hohe Anteil der Kommunikation an der Gesamtlaufzeit ist durch die in 2.4.2 aufgez\"ahlten Einflussfaktoren, besonders aber auf die Netzwerkstruktur und
-und MPI Implementierung, zur\"uckzuf\"uhren.\\\\
-
-Zusammenfassend kann die Aussage getroffen werden, dass die Implementierung des Merge-Splittung-Sort Algorithmus unter der MPI-Umgebung nicht geeignet ist.\\
-Die unter bestimmten Voraussetzungen zu erreichende maginale Verk\"urzung der Gesamtlaufzeit ist gering, sodass vor der konkreten Nutzung dieser
-Implementierung im vornherein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
-f\"uhrt.
 
 \subsubsection{Genauigkeit der Funktionen}
 \begin{figure}[htb]
   \begin{center}
-    \includegraphics[width=1\hsize]{../Kommunikationsanteil.PNG}
+    \includegraphics[width=1\hsize]{../mc3_abweichung.png}
   \end{center}
-  \caption{\label{mpikommoverhead}
-    Diagramm der Abweichung von $\pi$ der Funktion 1}
+  \caption{\label{mc3genauigkeit}
+    Diagramm der Abweichung f\"ur die MC-3-Implementierung}
 \end{figure}
-\begin{figure}[htb]
-  \begin{center}
-    \includegraphics[width=1\hsize]{../Kommunikationsanteil.PNG}
-  \end{center}
-  \caption{\label{mpikommoverhead}
-    Diagramm der Abweichung von $\pi$ der Funktion 2}
-\end{figure}
-
 
 \section{Anhang}
 \subsection{Quellcode-Listings MPI}
@@ -613,40 +573,7 @@ for x in 2 ; do
 done
 \end{lstlisting}
 
-
-
-
 %Beginn einer neuen Seite
 \clearpage
-
-\section{Glossar}
-\begin{description}
- \item[DHCP-Server] DHCP steht als Abk\"urzung f\"ur "Dynamic Host
-Configuration Protokoll" und beschreibt Techniken um Hosts in Netzwerken
-dynamisch Netzwerkparameter wie IP-Adressen zuzuwei\ss{}en\footnote{\cite{dhcp}}
- \item[Router] Ein Rechnersystem mit mindestens zwei Netzwerkschnittstellen,
-das Netzwerkschverkehr zwischen diesen Netzwerkschnittstellen nach einem
-Regelwerk vermittelt und weiterleitet.
- \item[Routerdistribution] Eine spezielle Art von Betriebssystem, deren
-Hauptaugenmerk bei der Konzeption und Entwicklung darauf liegt
-Router-Funktionen sicher und stabil auszuf\"uhren
- \item[VLAN] Die Abk\"urzung VLAN steht f\"ur Virtual Local Area Network und
-fasst Techniken zusammen um physikale Netzwerkstrukturen logisch zu
-Segmentieren, beispielsweise zur Erh\"ohung der Sicherheit oder um
-Broadcast-Dom\"anen zu verkleinern.
-\end{description}
-\clearpage
-
-\section{Literaturverzeichnis}
-
-Musterfrau, Renate: Muster. Frankfurt 2003.
-
-
-\begin{thebibliography}{99}
-
-\bibitem{IPCopManual} http://www.ipcop.org/1.4.0/en/install/html/ , abrufbar am
-16.12.2012
-
-\end{thebibliography}
 \end{document}
 %% EOF
