@@ -326,74 +326,67 @@ Dieses Skript ist im Anhang \nameref{mc3:erfassungsh} zu finden.\\\\
 
 \subsection{Ergebnisse}
 \subsubsection{Speedup}
+
 \begin{figure}[htb]
   \begin{center}
     \includegraphics[width=1\hsize]{../mc3_speedup.png}
   \end{center}
-  \caption{\label{mpikommoverhead}
-    Diagramm den Speedup f\"ur die MC-3-Implementierung}
+  \caption{\label{mc3speedup}
+    Diagramm des Speedup f\"ur die MC-3-Implementierung abh\"angig von \texttt{n}}
 \end{figure}
 \begin{figure}[htb]
   \begin{center}
     \includegraphics[width=1\hsize]{../mc3_speeduppercpu.png}
   \end{center}
-  \caption{\label{mpikommoverhead}
-    Diagramm den Speedup f\"ur die MC-3-Implementierung}
+  \caption{\label{mc3speeduppercpu}
+    Diagramm des Speedup f\"ur die MC-3-Implementierung abh\"angig von \texttt{p}}
 \end{figure}
-Auf Grund der maximalen Prozessoranzahl von 8, k\"onnen nur besschr\"ankte Aussagen dar\"uber getroffen werden, ob sich das Laufzeitverhalten mit
-weiter ansteigender Prozessoranzahl an das von Ahmdals Gesetz beschriebene Verhalten ann\"ahrt.
+Auf Grund der Bregrenzung auf maximal acht Prozessoren k\"onnen nur besschr\"ankte Aussagen dar\"uber getroffen werden, ob sich das Laufzeitverhalten
+mit weiter ansteigender Prozessoranzahl an das von Ahmdals Gesetz beschriebene Verhalten ann\"ahrt.\\
 
-Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass bereits bei Nutzung von mehr als 10 Prozessoren der Speedup mit
-steigender
-Prozessoranzahl abnimmt. Der im Test beste erreichte Speedup stellte sich bei Nutzung von 10 Prozessoren und hinreichend vieler Elemente ein (>= 80.000).
-Bereits beim Einsatz von von 16 Prozessoren war die Laufzeitverringerung gegenüber der vollständig sequenziellen Implementierung nur noch marginal, Tendenz
-abnehmend. Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeitverhalten ist das Ergebnis weiterer Einflussfaktoren wie beispielsweise:
-\begin{itemize}
-  \item Eingesetzte Hardware (Netzwerkstruktur, nicht exklusiv genutzte Hardware )
-  \item Eingesetzte Software (Betriebssystem, genutze Implementierung des Message-Passing-Interface)
-  \item Implementierung des Algorithmus (eingesetzter Sortieralgorithmus, Kommunikationsablauf)
-\end{itemize}
-Im Laufe der Implementation wurde ein direkter Einfluss des verwendeten Sortieralgorithmus auf die Gesamtlaufzeit deutlich. Es wurden  verschiedene
-Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek von C enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
+Die Messwerte zeigen, dass bei 128 Integrationsintervallen und mehr ein Speedup gr\"o\ss{}er 1 vorherrscht. Werden alle 8 Prozessoren und 16384
+Integrationsintervalle genutzt, ergibt sich sogar ein Speedup von 8.\\
 
 \subsubsection{Effizienz}
 \begin{figure}[htb]
   \begin{center}
     \includegraphics[width=1\hsize]{../mc3_effizienz.png}
   \end{center}
-  \caption{\label{mpikommoverhead}
+  \caption{\label{mc3effizienz}
     Diagramm der Effizienz f\"ur die MC-3-Implementierung}
 \end{figure}
-Eine weiterer aussagekräftiger Wert ist die Effizienz.
-Die Effizienz gibt die relative Verbesserung in der Verarbeitungsleistung an und ergibt sich aus dem Quotient von Speedup und Prozessoranzahl.
-Wie aus dem betreffenden Diagramm ersichtlich wird, nimmt die Effizienz umgekehrt proportional zur Anzahl der eingesetzten
-Prozessoren ab. Dabei hat die Anzahl der zu sortierenden Elemente nur marginalen Einfluss auf die jeweiligen Effizienzwerte.
+Bei einem hohem Integrationsintervall ergibt sich ein Effizienzwert von bis zu 1,2. Das legt den Schluss nahe, dass diese Implementierung gut skaliert, was
+bedeutet, dass sich die Laufzeit bei Verdoppelung der Prozessoranzahl mehr als halbiert.
 
 \subsubsection{Kommunikationsanteil}
 \begin{figure}[htb]
   \begin{center}
+    \includegraphics[width=1\hsize]{../mc3_kommunikationsanteil.png}
+  \end{center}
+  \caption{\label{mc3kommanteil}
+    Diagramm des Kommunikationsanteils f\"ur die MC-3-Implementierung}
+\end{figure}
+In dieser Implementierung steigt der Kommunikationsanteil mit der Anzahl der Prozessoren und sinkt mit der Anzahl der Integrationsintervalle.
+Bei bis zu 32 Integrationsintervallen ist dieser Kommunikationsoverhead sehr gro\ss{}. was den Schluss nahe legt, dass die Funktionen zum senden und empfangen
+der Optimierung bed\"urfen.
+
+\subsubsection{Laufzeiten der Funktionen}
+\begin{figure}[htb]
+  \begin{center}
     \includegraphics[width=1\hsize]{../mc3_laufzeit.png}
   \end{center}
-  \caption{\label{mpikommoverhead}
-    Diagramm der Laufzeit f\"ur die MC-3-Implementierung}
+  \caption{\label{mc3genauigkeit}
+    Diagramm der Laufzeiten f\"ur die MC-3-Implementierung}
 \end{figure}
-Die Auswertung der Messwerte zeigt, dass mit steigender Anzahl zu sortierender Elemente der Kommunikationsanteil an der Gesamtlaufzeit exponentiell ansteigt.
-Bereits bei Verwendung von 8 Prozessoren betr\"agt der Kommunikationsanteil an der Gesamtlaufzeit etwa 70 Prozent und steigt weiter an, sodass schon
-f\"ur 20 Prozessoren der Kommunikationsanteil \"uber 80 Prozent mit weiterhin steigender Tendenz betr\"agt.
-Dieser hohe Anteil der Kommunikation an der Gesamtlaufzeit ist durch die in 2.4.2 aufgez\"ahlten Einflussfaktoren, besonders aber auf die Netzwerkstruktur und
-und MPI Implementierung, zur\"uckzuf\"uhren.\\\\
-
-Zusammenfassend kann die Aussage getroffen werden, dass die Implementierung des Merge-Splittung-Sort Algorithmus unter der MPI-Umgebung nicht geeignet ist.\\
-Die unter bestimmten Voraussetzungen zu erreichende marginale Verk\"urzung der Gesamtlaufzeit ist gering, sodass vor der konkreten Nutzung dieser
-Implementierung im vornherein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
-f\"uhrt.
+Es wird ersichtlich, dass Funktion 2 eine deutlich h\"ohere Laufzeit besitzt. Dies liegt darin begr\"undet, dass sie einen eigenen Funktionsaufruf
+besitzt (\texttt{sin()}) wodurch ein Kontextwechsel vollzogen werden muss und zus\"atzlich mehr Operationen als bei Funktion 1 durchgef\"uhrt werden m\"ussen.
 
 \subsubsection{Genauigkeit der Funktionen}
 \begin{figure}[htb]
   \begin{center}
     \includegraphics[width=1\hsize]{../mc3_abweichung.png}
   \end{center}
-  \caption{\label{mpikommoverhead}
+  \caption{\label{mc3genauigkeit}
     Diagramm der Abweichung f\"ur die MC-3-Implementierung}
 \end{figure}
 
@@ -595,40 +588,7 @@ for x in 2 ; do
 done
 \end{lstlisting}
 
-
-
-
 %Beginn einer neuen Seite
 \clearpage
-
-\section{Glossar}
-\begin{description}
- \item[DHCP-Server] DHCP steht als Abk\"urzung f\"ur "Dynamic Host
-Configuration Protokoll" und beschreibt Techniken um Hosts in Netzwerken
-dynamisch Netzwerkparameter wie IP-Adressen zuzuwei\ss{}en\footnote{\cite{dhcp}}
- \item[Router] Ein Rechnersystem mit mindestens zwei Netzwerkschnittstellen,
-das Netzwerkschverkehr zwischen diesen Netzwerkschnittstellen nach einem
-Regelwerk vermittelt und weiterleitet.
- \item[Routerdistribution] Eine spezielle Art von Betriebssystem, deren
-Hauptaugenmerk bei der Konzeption und Entwicklung darauf liegt
-Router-Funktionen sicher und stabil auszuf\"uhren
- \item[VLAN] Die Abk\"urzung VLAN steht f\"ur Virtual Local Area Network und
-fasst Techniken zusammen um physikale Netzwerkstrukturen logisch zu
-Segmentieren, beispielsweise zur Erh\"ohung der Sicherheit oder um
-Broadcast-Dom\"anen zu verkleinern.
-\end{description}
-\clearpage
-
-\section{Literaturverzeichnis}
-
-Musterfrau, Renate: Muster. Frankfurt 2003.
-
-
-\begin{thebibliography}{99}
-
-\bibitem{IPCopManual} http://www.ipcop.org/1.4.0/en/install/html/ , abrufbar am
-16.12.2012
-
-\end{thebibliography}
 \end{document}
 %% EOF

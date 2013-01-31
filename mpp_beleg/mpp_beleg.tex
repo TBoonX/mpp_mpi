@@ -332,18 +332,20 @@ Dieses Skript ist im Anhang \nameref{mc3:erfassungsh} zu finden.\\\\
     \includegraphics[width=1\hsize]{../mc3_speedup.png}
   \end{center}
   \caption{\label{mc3speedup}
-    Diagramm den Speedup f\"ur die MC-3-Implementierung}
+    Diagramm des Speedup f\"ur die MC-3-Implementierung abh\"angig von \texttt{n}}
 \end{figure}
-
 \begin{figure}[htb]
   \begin{center}
     \includegraphics[width=1\hsize]{../mc3_speeduppercpu.png}
   \end{center}
   \caption{\label{mc3speeduppercpu}
-    Diagramm den Speedup f\"ur die MC-3-Implementierung}
+    Diagramm des Speedup f\"ur die MC-3-Implementierung abh\"angig von \texttt{p}}
 \end{figure}
 Auf Grund der Bregrenzung auf maximal acht Prozessoren k\"onnen nur besschr\"ankte Aussagen dar\"uber getroffen werden, ob sich das Laufzeitverhalten
-mit weiter ansteigender Prozessoranzahl an das von Ahmdals Gesetz beschriebene Verhalten ann\"ahrt.
+mit weiter ansteigender Prozessoranzahl an das von Ahmdals Gesetz beschriebene Verhalten ann\"ahrt.\\
+
+Die Messwerte zeigen, dass bei 128 Integrationsintervallen und mehr ein Speedup gr\"o\ss{}er 1 vorherrscht. Werden alle 8 Prozessoren und 16384
+Integrationsintervalle genutzt, ergibt sich sogar ein Speedup von 8.\\
 
 \subsubsection{Effizienz}
 \begin{figure}[htb]
@@ -353,19 +355,33 @@ mit weiter ansteigender Prozessoranzahl an das von Ahmdals Gesetz beschriebene V
   \caption{\label{mc3effizienz}
     Diagramm der Effizienz f\"ur die MC-3-Implementierung}
 \end{figure}
-Eine weiterer aussagekräftiger Wert ist die Effizienz.
-Die Effizienz gibt die relative Verbesserung in der Verarbeitungsleistung an und ergibt sich aus dem Quotient von Speedup und Prozessoranzahl.
-Wie aus dem betreffenden Diagramm ersichtlich wird, nimmt die Effizienz umgekehrt proportional zur Anzahl der eingesetzten
-Prozessoren ab. Dabei hat die Anzahl der zu sortierenden Elemente nur marginalen Einfluss auf die jeweiligen Effizienzwerte.
+Bei einem hohem Integrationsintervall ergibt sich ein Effizienzwert von bis zu 1,2. Das legt den Schluss nahe, dass diese Implementierung gut skaliert, was
+bedeutet, dass sich die Laufzeit bei Verdoppelung der Prozessoranzahl mehr als halbiert.
 
 \subsubsection{Kommunikationsanteil}
 \begin{figure}[htb]
   \begin{center}
-    \includegraphics[width=1\hsize]{../mc3_laufzeit.png}
+    \includegraphics[width=1\hsize]{../mc3_kommunikationsanteil.png}
   \end{center}
   \caption{\label{mc3kommanteil}
-    Diagramm der Laufzeit f\"ur die MC-3-Implementierung}
+    Diagramm des Kommunikationsanteils f\"ur die MC-3-Implementierung}
 \end{figure}
+In dieser Implementierung steigt der Kommunikationsanteil mit der Anzahl der Prozessoren und sinkt mit der Anzahl der Integrationsintervalle.
+Bei bis zu 32 Integrationsintervallen ist dieser Kommunikationsoverhead sehr gro\ss{}. was den Schluss nahe legt, dass die Funktionen zum senden und empfangen
+der Optimierung bed\"urfen.\\
+
+Bei ausreichend vielen Integrationsintervallen (=> 8192) ist dieser Anteil zu mit unter 10 Prozent sehr gering.
+
+\subsubsection{Laufzeiten der Funktionen}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../mc3_laufzeit.png}
+  \end{center}
+  \caption{\label{mc3genauigkeit}
+    Diagramm der Laufzeiten f\"ur die MC-3-Implementierung}
+\end{figure}
+Es wird ersichtlich, dass Funktion 2 eine deutlich h\"ohere Laufzeit besitzt. Dies liegt darin begr\"undet, dass sie einen eigenen Funktionsaufruf
+besitzt (\texttt{sin()}) wodurch ein Kontextwechsel vollzogen werden muss und zus\"atzlich mehr Operationen als bei Funktion 1 durchgef\"uhrt werden m\"ussen.
 
 \subsubsection{Genauigkeit der Funktionen}
 \begin{figure}[htb]
@@ -375,6 +391,11 @@ Prozessoren ab. Dabei hat die Anzahl der zu sortierenden Elemente nur marginalen
   \caption{\label{mc3genauigkeit}
     Diagramm der Abweichung f\"ur die MC-3-Implementierung}
 \end{figure}
+Bereits bei 16 Integrationsintervallen ist die Abweichung des ermittelten Wertes von $\pi$ sehr gering.\\
+Ab 256 Integrationsintervallen weicht der mit der Funktion 1 ermittelte Wert f\"ur $\pi$ nicht mehr vom doppeltgenauen -Maschinen-$\pi$ ab.\\
+Mit Funktion 2 ist dies erst bei 8192 Integrationsintervallen der Fall.\\
+Dieser Unterschied liegt in der oberen Integrationsgrenze der Funktionen begr\"undet. Funktion 2 verwendet $\pi$ mit 15 Nachkommastellen, was bereits eine
+Ungenauigkeit darstellt. Weiterhin ist die Implementierung der Funktion \texttt{sin()} unbekannt, was Einfl\"usse auf das Laufzeitverhalten hat.
 
 \section{Anhang}
 \subsection{Quellcode-Listings MPI}
