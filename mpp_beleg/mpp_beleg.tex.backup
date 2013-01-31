@@ -304,6 +304,19 @@ dienen. Dies wurde in einem C-Programm umgesetzt. Die Anzahl der Prozessoren, di
 dabei Eingabewerte sein. Als Resultat soll das Programm das Laufzeitverhalten und die Genauigkeit der Funktionen messen.
 
 \subsection{Programmbeschreibung}
+Das Programm wird auf dem Rechner Abel im Rechnerpool gestartet, der mit dem Multiprozessorsystem MC-3 verbunden ist. Als Startparameter muss \texttt{n} und
+die Nummer der zu nutzenden Funktion \"ubergeben werden. \texttt{n} wird intern mit 8 multipliziert, um die Teilbarkeit mit der Prozessoranzahl zu
+gew\"ahrleisten. Der Funktionsnummer 1 ist $f(x) = \frac{4}{x^2+1}$ zugeordnet und 2 der Funktion $f(x) = x*sin(x)$.\\
+
+Die Zeiterfassung findet mit der Funktion \texttt{TimeNowHigh()} statt. Die Kommunikation hingegen mit \texttt{Send()} und \texttt{Recv()}.\\
+F\"ur die Anordnung der Prozessoren wurde ein Stern gew\"ahlt. Dabei werden Links von allen Prozessoren mit der ID ungleich 0 zum Prozessor mit der ID 0
+angelegt und verwendet.\\
+
+Nach Auswertung der Argumente, ermittelt jeder Prozessor die Laufzeit f\"ur die sequentielle Berechnung des Integrals T(1).\\
+Anschlie\ss{}end ermittelt jeder Prozessor das Integral seines Teilintervalls.
+Schlussendlich empf\"angt der Prozessor mit der ID 0 alle ermittelten Teilintegrale sowie die Gesamtlaufzeit, T(1) und die zur
+Kommunikation ben\"otigte Zeit.
+Der Prozessor mit der ID bildet aus den Zeitwerten Durchschnitte und gibt sie in der Konsole aus.
 
 
 \subsection{Laufzeitumgebung}
@@ -312,6 +325,8 @@ Dieses Skript ist im Anhang \nameref{mc3:erfassungsh} zu finden.\\\\
 
 
 \subsection{Ergebnisse}
+
+
 \subsection{Auswertung}
 
 \section{Anhang}

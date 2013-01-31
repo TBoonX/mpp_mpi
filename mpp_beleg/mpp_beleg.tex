@@ -304,8 +304,20 @@ dienen. Dies wurde in einem C-Programm umgesetzt. Die Anzahl der Prozessoren, di
 dabei Eingabewerte sein. Als Resultat soll das Programm das Laufzeitverhalten und die Genauigkeit der Funktionen messen.
 
 \subsection{Programmbeschreibung}
-Das Programm wird auf dem Rechner Abel im Rechnerpool gestartet, der mit dem Multiprozessorsystem MC-3 verbunden ist. Als Startparameter m\"ussen die Anzahl
-der Prozessoren \texttt{p} und die Anzahl der Integrationsintervalle \texttt{n}.
+Das Programm wird auf dem Rechner Abel im Rechnerpool gestartet, der mit dem Multiprozessorsystem MC-3 verbunden ist. Als Startparameter muss \texttt{n} und
+die Nummer der zu nutzenden Funktion \"ubergeben werden. \texttt{n} wird intern mit 8 multipliziert, um die Teilbarkeit mit der Prozessoranzahl zu
+gew\"ahrleisten. Der Funktionsnummer 1 ist $f(x) = \frac{4}{x^2+1}$ zugeordnet und 2 der Funktion $f(x) = x*sin(x)$.\\
+
+Die Zeiterfassung findet mit der Funktion \texttt{TimeNowHigh()} statt. Die Kommunikation hingegen mit \texttt{Send()} und \texttt{Recv()}.\\
+F\"ur die Anordnung der Prozessoren wurde ein Stern gew\"ahlt. Dabei werden Links von allen Prozessoren mit der ID ungleich 0 zum Prozessor mit der ID 0
+angelegt und verwendet.\\
+
+Nach Auswertung der Argumente, ermittelt jeder Prozessor die Laufzeit f\"ur die sequentielle Berechnung des Integrals T(1).\\
+Anschlie\ss{}end ermittelt jeder Prozessor das Integral seines Teilintervalls.
+Schlussendlich empf\"angt der Prozessor mit der ID 0 alle ermittelten Teilintegrale sowie die Gesamtlaufzeit, T(1) und die zur
+Kommunikation ben\"otigte Zeit.
+Der Prozessor mit der ID bildet aus den Zeitwerten Durchschnitte und gibt sie in der Konsole aus.
+
 
 \subsection{Laufzeitumgebung}
 Hier ist nur ein Skript zur Erfassung der Messwerte f\"ur verschiedene Prozessoranzahlen, Intervallteilungen pro Prozessor und Funktionen zu nennen.\\
@@ -313,7 +325,96 @@ Dieses Skript ist im Anhang \nameref{mc3:erfassungsh} zu finden.\\\\
 
 
 \subsection{Ergebnisse}
-\subsection{Auswertung}
+\subsubsection{Speedup}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../speedup.png}
+  \end{center}
+  \caption{\label{mpispeedup}
+    Speedup-Diagramm f\"ur die MC-3-Implementierung mit der Funktion 1}
+\end{figure}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../speedup.png}
+  \end{center}
+  \caption{\label{mpispeedup}
+    Speedup-Diagramm f\"ur die MC-3-Implementierung mit der Funktion 2}
+\end{figure}
+Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass bereits bei Nutzung von mehr als 10 Prozessoren der Speedup mit
+steigender
+Prozessoranzahl abnimmt. Der im Test beste erreichte Speedup stellte sich bei Nutzung von 10 Prozessoren und hinreichend vieler Elemente ein (>= 80.000).
+Bereits beim Einsatz von von 16 Prozessoren war die Laufzeitverringerung gegenüber der vollständig sequenziellen Implementierung nur noch marginal, Tendenz
+abnehmend. Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeitverhalten ist das Ergebnis weiterer Einflussfaktoren wie beispielsweise:
+\begin{itemize}
+  \item Eingesetzte Hardware (Netzwerkstruktur, nicht exklusiv genutzte Hardware )
+  \item Eingesetzte Software (Betriebssystem, genutze Implementierung des Message-Passing-Interface)
+  \item Implementierung des Algorithmus (eingesetzter Sortieralgorithmus, Kommunikationsablauf)
+\end{itemize}
+Im Laufe der Implementation wurde ein direkter Einfluss des verwendeten Sortieralgorithmus auf die Gesamtlaufzeit deutlich. Es wurden  verschiedene
+Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek von C enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
+
+\subsubsection{Effizienz}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../effizienz.png}
+  \end{center}
+  \caption{\label{mpieffizienz}
+    Effizienz-Diagramm f\"ur die MC-3-Implementierung mit der Funktion 1}
+\end{figure}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../effizienz.png}
+  \end{center}
+  \caption{\label{mpieffizienz}
+    Effizienz-Diagramm f\"ur die MC-3-Implementierung mit der Funktion 2}
+\end{figure}
+Eine weiterer aussagekräftiger Wert ist die Effizienz.
+Die Effizienz gibt die relative Verbesserung in der Verarbeitungsleistung an und ergibt sich aus dem Quotient von Speedup und Prozessoranzahl.
+Wie aus dem betreffenden Diagramm ersichtlich wird, nimmt die Effizienz umgekehrt proportional zur Anzahl der eingesetzten
+Prozessoren ab. Dabei hat die Anzahl der zu sortierenden Elemente nur marginalen Einfluss auf die jeweiligen Effizienzwerte.
+
+\subsubsection{Kommunikationsanteil}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../Kommunikationsanteil.PNG}
+  \end{center}
+  \caption{\label{mpikommoverhead}
+    Diagramm des Kommunikationsanteils f\"ur die MC3-Implementierung mit der Funktion 1}
+\end{figure}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../Kommunikationsanteil.PNG}
+  \end{center}
+  \caption{\label{mpikommoverhead}
+    Diagramm des Kommunikationsanteils f\"ur die MC3-Implementierung mit der Funktion 2}
+\end{figure}
+Die Auswertung der Messwerte zeigt, dass mit steigender Anzahl zu sortierender Elemente der Kommunikationsanteil an der Gesamtlaufzeit exponentiell ansteigt.
+Bereits bei Verwendung von 8 Prozessoren betr\"agt der Kommunikationsanteil an der Gesamtlaufzeit etwa 70 Prozent und steigt weiter an, sodass schon
+f\"ur 20 Prozessoren der Kommunikationsanteil \"uber 80 Prozent mit weiterhin steigender Tendenz betr\"agt.
+Dieser hohe Anteil der Kommunikation an der Gesamtlaufzeit ist durch die in 2.4.2 aufgez\"ahlten Einflussfaktoren, besonders aber auf die Netzwerkstruktur und
+und MPI Implementierung, zur\"uckzuf\"uhren.\\\\
+
+Zusammenfassend kann die Aussage getroffen werden, dass die Implementierung des Merge-Splittung-Sort Algorithmus unter der MPI-Umgebung nicht geeignet ist.\\
+Die unter bestimmten Voraussetzungen zu erreichende maginale Verk\"urzung der Gesamtlaufzeit ist gering, sodass vor der konkreten Nutzung dieser
+Implementierung im vornherein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
+f\"uhrt.
+
+\subsubsection{Genauigkeit der Funktionen}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../Kommunikationsanteil.PNG}
+  \end{center}
+  \caption{\label{mpikommoverhead}
+    Diagramm der Abweichung von $\pi$ der Funktion 1}
+\end{figure}
+\begin{figure}[htb]
+  \begin{center}
+    \includegraphics[width=1\hsize]{../Kommunikationsanteil.PNG}
+  \end{center}
+  \caption{\label{mpikommoverhead}
+    Diagramm der Abweichung von $\pi$ der Funktion 2}
+\end{figure}
+
 
 \section{Anhang}
 \subsection{Quellcode-Listings MPI}
