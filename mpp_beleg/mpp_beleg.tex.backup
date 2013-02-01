@@ -35,11 +35,12 @@ pdfstartpage=3, pdfstartview=FitH,]{hyperref} %Verlinkungen
 \usepackage{array}					%farbige Tabellen
 \usepackage[table]{xcolor} 			%farbige Tabellen
 \usepackage{graphicx}				% \includegraphics bnoetigt dies
-\usepackage{draftwatermark}			% wasserzeichen
+
+%\usepackage{draftwatermark}			% wasserzeichen
 	%Quelle: http://choorucode.com/2010/05/05/latex-adding-draft-watermark/?like=1&source=post_flair&_wpnonce=1c9f85538d
-\SetWatermarkText{VORABVERSION}		% wasserzeichen-text
-\SetWatermarkLightness{0.9}			% wasserzeichen-kontrast
-\SetWatermarkScale{2.5}				% wasserzeichen-zeichengroe\ss{}e
+%\SetWatermarkText{VORABVERSION}		% wasserzeichen-text
+%\SetWatermarkLightness{0.9}			% wasserzeichen-kontrast
+%\SetWatermarkScale{2.5}				% wasserzeichen-zeichengroe\ss{}e
 
 \definecolor{Navy}{rgb}{0,0,0.5}
 \definecolor{Gray}{gray}{0.5}
@@ -87,8 +88,9 @@ Wintersemester 2012/2013}
 \begin{center}
 \begin{Large}
 \vfill {\textsf{\textbf{
-Ausarbeitung zum Fach Message-Passing-Programmierung\\--VORABVERSION--\\
+Ausarbeitung zum Fach Message-Passing-Programmierung
 }}}
+
 \end{Large}
 Beleg im Fach Message-Passing-Programmierung
 \end{center}
@@ -102,7 +104,6 @@ Kurt Junghanns\\Philipp-Rosenthal-Stra\ss{}e 32\\04103 Leipzig\\kurt.junghanns@s
 
 \end{titlepage}
 %Ende der Titelseite
-
 
 %Inhaltsverzeichnis (aktualisiert sich erst nach dem zweiten Setzen)
 \tableofcontents
@@ -167,8 +168,8 @@ Nachfolgend werden Aussagen zum Laufzeitverhalten getroffen. Dabei wurden den La
 empfohlen mit 20.000, 40.000 sowie 80.000 Elementen zu Grunde gelegt.
 
 \subsection{Programmbeschreibung}
-Zun\"achst wird ein Array mit n Zufallszahlen von jedem Prozess erzeugt. Dieses wird sortiert, wobei die lokale Prozessorlaufzeit T(1) ermittelt wird. Jeder
-Prozessor erzeugt n/p Zufallszahlen und speichert sie in einem Array ab, wobei p die Anzahl der verwendet Prozessoren angibt. Die Kommunikation zwischen den
+Zun\"achst wird ein Array mit n Zufallszahlen von jedem Prozess erzeugt. Dieses wird sortiert, wobei die lokale Prozessorlaufzeit T(1) ermittelt wird.\\
+Jeder Prozessor erzeugt n/p Zufallszahlen und speichert sie in einem Array ab, wobei p die Anzahl der verwendeten Prozessoren und n die Anzahl der zu sortierenden Zufallszahlen angibt. Die Kommunikation zwischen den
 Prozessoren wird durch die Funktionen \texttt{MPI\_Send()} und \texttt{MPI\_Recv()} realisiert. Die Zeiterfassung erfolgt dabei mit der
 Funktion \texttt{MPI\_Wtime()}. Anschlie\ss{}end wird der Merge-Splitting-Sort-Algorithmus ausgef\"uhrt. Nach diesem verteilten Sortiervorgang ermittelt jeder
 Prozessor die ben\"otigten Messwerte:
@@ -179,7 +180,7 @@ Prozessor die ben\"otigten Messwerte:
  \item Kommunikationsanteil
 \end{itemize}
 Ein ausgezeichneter Prozessor sammelt die erfassten Werte und die sortierten Arrays ein und ermittelt die Durchschnittswerte. Dies erfolgt mit Hilfe der
-Funktionen \texttt{MPI\_Reduce()} und \texttt{MPI\_Gather()}. Dieser Prozessor ist au\ss{}erdem f\"ur die Ausgabe der Resultate auf der Konsole zust\"andig.
+Funktionen \texttt{MPI\_Reduce()} und \texttt{MPI\_Gather()}. Dieser Prozessor ist au\ss{}erdem f\"ur die Ausgabe der Resultate auf der Konsole zust\"andig.\\
 
 Bei Aufruf erwartet das Programm folgendene Startparameter:
 \begin{description}
@@ -195,19 +196,19 @@ Der vollst\"andige Quellcode des Programms sowie aller Skripte liegt dem Projekt
 Um die Entwicklung und die Tests der Implementierung so effektiv wie m\"oglich zu gestalten, wurden mehrere BASH-Skripte erstellt.
 Das BASH-Skript \texttt{run.sh}, dass im Anhang vollst\"andig aufgef\"uhrt ist,  erf\"ullt dabei die folgenden Funktionen:
 \begin{itemize}
- \item Ermitteln der Prozessoranzahl \textbf{p}, Anzahl der zu sortierenden Elemente \textbf{n}, Name der zu kompilierenden C-Datei, Name der kompilierten
+ \item Ermitteln der Prozessoranzahl \textbf{p}, Anzahl der zu sortierenden Elemente \textbf{n}, Name der zu kompilierenden C-Datei und Name der kompilierten
 Bin\"ardatei als Startparameter
  \item pr\"ufen, welcher der Rechner im Pool per SSH erreichbar sind
  \item ermitteln der durchschnittlichen Auslastung aller errichbaren Rechner im Pool
- \item sortieren der erreichbaren Poolrechner aufsteigend nach der durchschnittlichen Auslastung der letzten Minute, der letzten 5 Minuten, der letzten 15
+ \item sortieren der erreichbaren Poolrechner aufsteigend nach der durchschnittlichen Auslastung der letzten Minute, der letzten 5 Minuten und der letzten 15
 Minuten
  \item Kompilieren der angegebenen C-Datei
  \item Ausf\"uhrung der resultierenden Bin\"ardatei auf den \textbf{p} Rechnern mit der geringsten durchschnittlichen Auslastung um das Risiko einer
 Verf\"alschung der Messergebnisse durch Fremdeinwirkung zu minimieren
 \end{itemize}
 
-Ein weiteres weiteres BASH-Skript \texttt{bench.sh} ruft die Bin\"ardatei mit den empfohlenen Elementanzahlen 20.000, 40.000 und 80.000 sequentiell f\"ur 2, 4,
-8, 10, 16 und 20 Prozessoren auf und gibt die jeweils gemessenen Zeitintervalle \"ubersichtlich aus um eine grafische Auswertung mit g\"angigen
+Ein weiteres BASH-Skript \texttt{bench.sh} ruft die Bin\"ardatei mit den empfohlenen Elementanzahlen 20.000, 40.000 und 80.000 sequentiell f\"ur 2, 4,
+8, 10, 16 und 20 Prozessoren auf und gibt die jeweils gemessenen Zeitintervalle \"ubersichtlich aus, um eine grafische Auswertung mit g\"angigen
 Tabellenkalkulationsprogrammen zu gestatten. 
 
 \subsection{Ergebnisse und Auswertung}
@@ -235,14 +236,14 @@ Gesamtlaufzeit des Algorithmus mit steigender Prozessoranzahl. W\"ahrend sich be
 \end{figure}
 Der Speedup ist der Quotient aus der Laufzeit des Algorithmus bei der Nutzung eines Prozessors und der Laufzeit bei Nutzung mehrerer Prozessoren.
 Ein Speedup-Wert von 1 sagt aus, dass der Algorithmus auf einem Prozessor der Laufzeit des Algorithmus auf mehreren Prozessoren entspricht.
-Im Idealfall steigt der Speedup proportional mit der Anzahl der Prozessoren. \\\\
+Im Idealfall steigt der Speedup proportional mit der Anzahl der Prozessoren. \\
 
 Nach Ahmdal setzt sich die Gesamtlaufzeit des parallelisierten Algorithmus zusammen aus einem Anteil mit nichtparallelisierbaren Code (sog.: sequenzieller
 Anteil) und einem Anteil an parallelisierbaren Code, dessen Laufzeit sich umgekehrt proportional zur Anzahl der benutzten Prozessoren verhält.
-Ahmdals Gesetz berücksichtigt hierbei jedoch nicht den mit steigender Prozessoranzahl ebenfalls wachsenden Kommunikationsaufwand. \\\\
+Ahmdals Gesetz berücksichtigt hierbei jedoch nicht den mit steigender Prozessoranzahl ebenfalls wachsenden Kommunikationsaufwand. \\
 
-Das zu erwartende Laufzeitverhalten für reale Implementierungen legt daher nahe, das der Speedup nicht linear mit der Anzahl der eingesetzten Prozessoren
-ansteigt, sondern auf Grund des ebenfalls ansteigenden Kommunikationsaufwandes ab einer bestimmten Prozessoranzahl wieder abnimmt. \\ \\
+Das zu erwartende Laufzeitverhalten für reale Implementierungen legt daher nahe, dass der Speedup nicht linear mit der Anzahl der eingesetzten Prozessoren
+ansteigt, sondern auf Grund des ebenfalls ansteigenden Kommunikationsaufwandes ab einer bestimmten Prozessoranzahl wieder abnimmt. \\
 
 Die durchgeführten Laufzeitmessungen mit der Implementierung des Algorithmus zeigen jedoch, dass bereits bei Nutzung von mehr als 10 Prozessoren der Speedup mit
 steigender
@@ -257,6 +258,7 @@ abnehmend. Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeit
 Im Laufe der Implementation wurde ein direkter Einfluss des verwendeten Sortieralgorithmus auf die Gesamtlaufzeit deutlich. Es wurden  verschiedene
 Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek von C enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
 
+\clearpage
 \subsubsection{Effizienz}
 \begin{figure}[htb]
   \begin{center}
@@ -270,6 +272,7 @@ Die Effizienz gibt die relative Verbesserung in der Verarbeitungsleistung an und
 Wie aus dem betreffenden Diagramm ersichtlich wird, nimmt die Effizienz umgekehrt proportional zur Anzahl der eingesetzten
 Prozessoren ab. Dabei hat die Anzahl der zu sortierenden Elemente nur marginalen Einfluss auf die jeweiligen Effizienzwerte. 
 
+\clearpage
 \subsubsection{Kommunikationsanteil}
 \begin{figure}[htb]
   \begin{center}
@@ -282,14 +285,13 @@ Die Auswertung der Messwerte zeigt, dass mit steigender Anzahl zu sortierender E
 Bereits bei Verwendung von 8 Prozessoren betr\"agt der Kommunikationsanteil an der Gesamtlaufzeit etwa 70 Prozent und steigt weiter an, sodass schon
 f\"ur 20 Prozessoren der Kommunikationsanteil \"uber 80 Prozent mit weiterhin steigender Tendenz betr\"agt.
 Dieser hohe Anteil der Kommunikation an der Gesamtlaufzeit ist durch die in 2.4.2 aufgez\"ahlten Einflussfaktoren, besonders aber auf die Netzwerkstruktur und
-und MPI Implementierung, zur\"uckzuf\"uhren.\\\\
+und MPI Implementierung, zur\"uckzuf\"uhren.\\
 
 Zusammenfassend kann die Aussage getroffen werden, dass die Implementierung des Merge-Splittung-Sort Algorithmus unter der MPI-Umgebung nicht geeignet ist.\\
 Die unter bestimmten Voraussetzungen zu erreichende maginale Verk\"urzung der Gesamtlaufzeit ist gering, sodass vor der konkreten Nutzung dieser
-Implementierung im vornherein betrachtet werden muss, ob die Anzahl der Prozessoren und zu sortierenden Elemente zu einer Verbesserung der Gesamtlaufzeit
-f\"uhrt.
+Implementierung im vornherein betrachtet werden muss, ob sich der Aufwand für die Nutzung der MPI Umgebung lohnt.
 
-
+\clearpage
 \section{Parallelrechnersystem MC-3}
 \subsection{Aufgabenstellung / Problembeschreibung}
 F\"ur das Parallelrechnersystem MC-3 wurde die Aufgabe der nummerischen Integration mittels Parabelformel gew\"ahlt. Hierbei sollen Funktionen mit Hilfe der
@@ -313,20 +315,21 @@ F\"ur die Anordnung der Prozessoren wurde ein Stern gew\"ahlt. Dabei werden Link
 angelegt und verwendet.\\
 
 Nach Auswertung der Argumente, ermittelt jeder Prozessor die Laufzeit f\"ur die sequentielle Berechnung des Integrals T(1).\\
-Anschlie\ss{}end ermittelt jeder Prozessor das Integral seines Teilintervalls.
+Anschlie\ss{}end berechnet jeder Prozessor das Integral seines Teilintervalls.
 Schlussendlich empf\"angt der Prozessor mit der ID 0 alle ermittelten Teilintegrale sowie die Gesamtlaufzeit, T(1) und die zur
 Kommunikation ben\"otigte Zeit.
-Der Prozessor mit der ID bildet aus den Zeitwerten Durchschnitte und gibt sie in der Konsole aus.
+Dieser Prozessor bildet aus den Zeitwerten Durchschnittswerte und gibt sie in der Konsole aus.
 
+Der vollst\"andige Quellcode dieses Programms sowie aller Skripte liegt dem Projektordner und ist au\ss{}erdem aus dem \"offentlichen Repository unter
+\footnote{\url{https://github.com/TBoonX/mpp_mc3}} abrufbar.
 
 \subsection{Laufzeitumgebung}
 Hier ist nur ein Skript zur Erfassung der Messwerte f\"ur verschiedene Prozessoranzahlen, Intervallteilungen pro Prozessor und Funktionen zu nennen.\\
-Dieses Skript ist im Anhang \nameref{mc3:erfassungsh} zu finden.\\\\
+Dieses Skript ist im Anhang \nameref{mc3:erfassungsh} zu finden.\\
 
-
+\clearpage
 \subsection{Ergebnisse}
 \subsubsection{Speedup}
-
 \begin{figure}[htb]
   \begin{center}
     \includegraphics[width=1\hsize]{../mc3_speedup.png}
@@ -347,6 +350,7 @@ mit weiter ansteigender Prozessoranzahl an das von Ahmdals Gesetz beschriebene V
 Die Messwerte zeigen, dass bei 128 Integrationsintervallen und mehr ein Speedup gr\"o\ss{}er 1 vorherrscht. Werden alle 8 Prozessoren und 16384
 Integrationsintervalle genutzt, ergibt sich sogar ein Speedup von 8.\\
 
+\clearpage
 \subsubsection{Effizienz}
 \begin{figure}[htb]
   \begin{center}
@@ -358,6 +362,7 @@ Integrationsintervalle genutzt, ergibt sich sogar ein Speedup von 8.\\
 Bei einem hohem Integrationsintervall ergibt sich ein Effizienzwert von bis zu 1,2. Das legt den Schluss nahe, dass diese Implementierung gut skaliert, was
 bedeutet, dass sich die Laufzeit bei Verdoppelung der Prozessoranzahl mehr als halbiert.
 
+%%\clearpage
 \subsubsection{Kommunikationsanteil}
 \begin{figure}[htb]
   \begin{center}
@@ -368,8 +373,11 @@ bedeutet, dass sich die Laufzeit bei Verdoppelung der Prozessoranzahl mehr als h
 \end{figure}
 In dieser Implementierung steigt der Kommunikationsanteil mit der Anzahl der Prozessoren und sinkt mit der Anzahl der Integrationsintervalle.
 Bei bis zu 32 Integrationsintervallen ist dieser Kommunikationsoverhead sehr gro\ss{}. was den Schluss nahe legt, dass die Funktionen zum senden und empfangen
-der Optimierung bed\"urfen.
+der Optimierung bed\"urfen.\\
 
+Bei ausreichend vielen Integrationsintervallen (=> 8192) ist dieser Anteil mit weniger als 10 Prozent sehr gering.
+
+\clearpage
 \subsubsection{Laufzeiten der Funktionen}
 \begin{figure}[htb]
   \begin{center}
@@ -381,6 +389,7 @@ der Optimierung bed\"urfen.
 Es wird ersichtlich, dass Funktion 2 eine deutlich h\"ohere Laufzeit besitzt. Dies liegt darin begr\"undet, dass sie einen eigenen Funktionsaufruf
 besitzt (\texttt{sin()}) wodurch ein Kontextwechsel vollzogen werden muss und zus\"atzlich mehr Operationen als bei Funktion 1 durchgef\"uhrt werden m\"ussen.
 
+%%\clearpage
 \subsubsection{Genauigkeit der Funktionen}
 \begin{figure}[htb]
   \begin{center}
@@ -389,8 +398,16 @@ besitzt (\texttt{sin()}) wodurch ein Kontextwechsel vollzogen werden muss und zu
   \caption{\label{mc3genauigkeit}
     Diagramm der Abweichung f\"ur die MC-3-Implementierung}
 \end{figure}
+Bereits bei 16 Integrationsintervallen ist die Abweichung des ermittelten Wertes von $\pi$ sehr gering.\\
+Ab 256 Integrationsintervallen weicht der mit der Funktion 1 ermittelte Wert f\"ur $\pi$ nicht mehr vom Maschinen-$\pi$ ab.\\
+Mit Funktion 2 ist dies erst bei 8192 Integrationsintervallen der Fall.\\
+Dieser Unterschied liegt in der oberen Integrationsgrenze der Funktionen begr\"undet. Funktion 2 verwendet $\pi$ mit 15 Nachkommastellen, was bereits eine
+Ungenauigkeit darstellt. Weiterhin ist die Implementierung der Funktion \texttt{sin()} unbekannt, was Einfl\"usse auf die Genauigkeit und das Laufzeitverhalten hat.\\\\
 
+%%Schlusswort
+Die Implementation der numerischen Integration mittels Prabelform auf MC-3 ist geeignet. Wird eine bestimmte Ann\"aherung an einen gesuchten Wert angestrebt, ist dies in kurzer Zeit m\"oglich.
 
+\clearpage
 \section{Anhang}
 \subsection{Quellcode-Listings MPI}
 \definecolor{listinggray}{gray}{0.9}

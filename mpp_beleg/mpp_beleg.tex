@@ -35,11 +35,12 @@ pdfstartpage=3, pdfstartview=FitH,]{hyperref} %Verlinkungen
 \usepackage{array}					%farbige Tabellen
 \usepackage[table]{xcolor} 			%farbige Tabellen
 \usepackage{graphicx}				% \includegraphics bnoetigt dies
-\usepackage{draftwatermark}			% wasserzeichen
+
+%\usepackage{draftwatermark}			% wasserzeichen
 	%Quelle: http://choorucode.com/2010/05/05/latex-adding-draft-watermark/?like=1&source=post_flair&_wpnonce=1c9f85538d
-\SetWatermarkText{VORABVERSION}		% wasserzeichen-text
-\SetWatermarkLightness{0.9}			% wasserzeichen-kontrast
-\SetWatermarkScale{2.5}				% wasserzeichen-zeichengroe\ss{}e
+%\SetWatermarkText{VORABVERSION}		% wasserzeichen-text
+%\SetWatermarkLightness{0.9}			% wasserzeichen-kontrast
+%\SetWatermarkScale{2.5}				% wasserzeichen-zeichengroe\ss{}e
 
 \definecolor{Navy}{rgb}{0,0,0.5}
 \definecolor{Gray}{gray}{0.5}
@@ -87,8 +88,9 @@ Wintersemester 2012/2013}
 \begin{center}
 \begin{Large}
 \vfill {\textsf{\textbf{
-Ausarbeitung zum Fach Message-Passing-Programmierung\\--VORABVERSION--\\
+Ausarbeitung zum Fach Message-Passing-Programmierung
 }}}
+
 \end{Large}
 Beleg im Fach Message-Passing-Programmierung
 \end{center}
@@ -102,7 +104,6 @@ Kurt Junghanns\\Philipp-Rosenthal-Stra\ss{}e 32\\04103 Leipzig\\kurt.junghanns@s
 
 \end{titlepage}
 %Ende der Titelseite
-
 
 %Inhaltsverzeichnis (aktualisiert sich erst nach dem zweiten Setzen)
 \tableofcontents
@@ -254,9 +255,10 @@ abnehmend. Dieses von den theoretisch erwarteten Messwerten abweichende Laufzeit
   \item Eingesetzte Software (Betriebssystem, genutze Implementierung des Message-Passing-Interface)
   \item Implementierung des Algorithmus (eingesetzter Sortieralgorithmus, Kommunikationsablauf)
 \end{itemize}
-Im Laufe der Implementation wurde ein direkter Einfluss des verwendeten Sortieralgorithmus auf die Gesamtlaufzeit deutlich. Es wurden  verschiedene
-Quicksort-Implementationen getestet, wobei durch die in der Standardbibliothek von C enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
+Im Laufe der Implementierung wurde ein direkter Einfluss des verwendeten Sortieralgorithmus auf die Gesamtlaufzeit deutlich. Es wurden  verschiedene
+Quicksort-Implementierungen getestet, wobei durch die in der Standardbibliothek von C enthaltene Funktion \texttt{qsort()} die besten Ergebnisse liefert.
 
+\clearpage
 \subsubsection{Effizienz}
 \begin{figure}[htb]
   \begin{center}
@@ -270,6 +272,7 @@ Die Effizienz gibt die relative Verbesserung in der Verarbeitungsleistung an und
 Wie aus dem betreffenden Diagramm ersichtlich wird, nimmt die Effizienz umgekehrt proportional zur Anzahl der eingesetzten
 Prozessoren ab. Dabei hat die Anzahl der zu sortierenden Elemente nur marginalen Einfluss auf die jeweiligen Effizienzwerte. 
 
+\clearpage
 \subsubsection{Kommunikationsanteil}
 \begin{figure}[htb]
   \begin{center}
@@ -282,14 +285,13 @@ Die Auswertung der Messwerte zeigt, dass mit steigender Anzahl zu sortierender E
 Bereits bei Verwendung von 8 Prozessoren betr\"agt der Kommunikationsanteil an der Gesamtlaufzeit etwa 70 Prozent und steigt weiter an, sodass schon
 f\"ur 20 Prozessoren der Kommunikationsanteil \"uber 80 Prozent mit weiterhin steigender Tendenz betr\"agt.
 Dieser hohe Anteil der Kommunikation an der Gesamtlaufzeit ist durch die in 2.4.2 aufgez\"ahlten Einflussfaktoren, besonders aber auf die Netzwerkstruktur und
-und MPI Implementierung, zur\"uckzuf\"uhren.\\\\
+und MPI Implementierung, zur\"uckzuf\"uhren.\\
 
-%%Schlusswort
 Zusammenfassend kann die Aussage getroffen werden, dass die Implementierung des Merge-Splittung-Sort Algorithmus unter der MPI-Umgebung nicht geeignet ist.\\
 Die unter bestimmten Voraussetzungen zu erreichende maginale Verk\"urzung der Gesamtlaufzeit ist gering, sodass vor der konkreten Nutzung dieser
 Implementierung im vornherein betrachtet werden muss, ob sich der Aufwand für die Nutzung der MPI Umgebung lohnt.
 
-
+\clearpage
 \section{Parallelrechnersystem MC-3}
 \subsection{Aufgabenstellung / Problembeschreibung}
 F\"ur das Parallelrechnersystem MC-3 wurde die Aufgabe der nummerischen Integration mittels Parabelformel gew\"ahlt. Hierbei sollen Funktionen mit Hilfe der
@@ -403,7 +405,8 @@ Dieser Unterschied liegt in der oberen Integrationsgrenze der Funktionen begr\"u
 Ungenauigkeit darstellt. Weiterhin ist die Implementierung der Funktion \texttt{sin()} unbekannt, was Einfl\"usse auf die Genauigkeit und das Laufzeitverhalten hat.\\\\
 
 %%Schlusswort
-Die Implementation der numerischen Integration mittels Prabelform auf MC-3 ist geeignet. Wird eine bestimmte Ann\"aherung an einen gesuchten Wert angestrebt, ist dies in kurzer Zeit m\"oglich.
+Die Implementierung der nummerischen Integration mittels Parabelform auf MC-3 ist geeignet. Wird eine bestimmte Ann\"aherung an einen gesuchten Wert angestrebt,
+ist dies in kurzer Zeit m\"oglich.
 
 \clearpage
 \section{Anhang}
