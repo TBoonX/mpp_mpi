@@ -318,15 +318,16 @@ Schlussendlich empf\"angt der Prozessor mit der ID 0 alle ermittelten Teilintegr
 Kommunikation ben\"otigte Zeit.
 Der Prozessor mit der ID bildet aus den Zeitwerten Durchschnitte und gibt sie in der Konsole aus.
 
+Der vollst\"andige Quellcode dieses Programms sowie aller Skripte liegt dem Projektordner und ist au\ss{}erdem aus dem \"offentlichen Repository unter
+\footnote{\url{https://github.com/TBoonX/mpp_mc3}} abrufbar.
 
 \subsection{Laufzeitumgebung}
 Hier ist nur ein Skript zur Erfassung der Messwerte f\"ur verschiedene Prozessoranzahlen, Intervallteilungen pro Prozessor und Funktionen zu nennen.\\
 Dieses Skript ist im Anhang \nameref{mc3:erfassungsh} zu finden.\\\\
 
-
+\clearpage
 \subsection{Ergebnisse}
 \subsubsection{Speedup}
-
 \begin{figure}[htb]
   \begin{center}
     \includegraphics[width=1\hsize]{../mc3_speedup.png}
@@ -347,6 +348,7 @@ mit weiter ansteigender Prozessoranzahl an das von Ahmdals Gesetz beschriebene V
 Die Messwerte zeigen, dass bei 128 Integrationsintervallen und mehr ein Speedup gr\"o\ss{}er 1 vorherrscht. Werden alle 8 Prozessoren und 16384
 Integrationsintervalle genutzt, ergibt sich sogar ein Speedup von 8.\\
 
+\clearpage
 \subsubsection{Effizienz}
 \begin{figure}[htb]
   \begin{center}
@@ -358,6 +360,7 @@ Integrationsintervalle genutzt, ergibt sich sogar ein Speedup von 8.\\
 Bei einem hohem Integrationsintervall ergibt sich ein Effizienzwert von bis zu 1,2. Das legt den Schluss nahe, dass diese Implementierung gut skaliert, was
 bedeutet, dass sich die Laufzeit bei Verdoppelung der Prozessoranzahl mehr als halbiert.
 
+%%\clearpage
 \subsubsection{Kommunikationsanteil}
 \begin{figure}[htb]
   \begin{center}
@@ -368,8 +371,11 @@ bedeutet, dass sich die Laufzeit bei Verdoppelung der Prozessoranzahl mehr als h
 \end{figure}
 In dieser Implementierung steigt der Kommunikationsanteil mit der Anzahl der Prozessoren und sinkt mit der Anzahl der Integrationsintervalle.
 Bei bis zu 32 Integrationsintervallen ist dieser Kommunikationsoverhead sehr gro\ss{}. was den Schluss nahe legt, dass die Funktionen zum senden und empfangen
-der Optimierung bed\"urfen.
+der Optimierung bed\"urfen.\\
 
+Bei ausreichend vielen Integrationsintervallen (=> 8192) ist dieser Anteil zu mit unter 10 Prozent sehr gering.
+
+\clearpage
 \subsubsection{Laufzeiten der Funktionen}
 \begin{figure}[htb]
   \begin{center}
@@ -381,6 +387,7 @@ der Optimierung bed\"urfen.
 Es wird ersichtlich, dass Funktion 2 eine deutlich h\"ohere Laufzeit besitzt. Dies liegt darin begr\"undet, dass sie einen eigenen Funktionsaufruf
 besitzt (\texttt{sin()}) wodurch ein Kontextwechsel vollzogen werden muss und zus\"atzlich mehr Operationen als bei Funktion 1 durchgef\"uhrt werden m\"ussen.
 
+\clearpage
 \subsubsection{Genauigkeit der Funktionen}
 \begin{figure}[htb]
   \begin{center}
@@ -395,6 +402,7 @@ Mit Funktion 2 ist dies erst bei 8192 Integrationsintervallen der Fall.\\
 Dieser Unterschied liegt in der oberen Integrationsgrenze der Funktionen begr\"undet. Funktion 2 verwendet $\pi$ mit 15 Nachkommastellen, was bereits eine
 Ungenauigkeit darstellt. Weiterhin ist die Implementierung der Funktion \texttt{sin()} unbekannt, was Einfl\"usse auf das Laufzeitverhalten hat.
 
+\clearpage
 \section{Anhang}
 \subsection{Quellcode-Listings MPI}
 \definecolor{listinggray}{gray}{0.9}
